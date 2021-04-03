@@ -61,6 +61,7 @@ class Result {
     OutT unwrap_or(OutT optb) const;
     OutT unwrap_or_else(std::function<OutT(ExceptionT)> op) const;
     ExceptionT unwrap_err() const;
+    operator bool() const {return is_ok();}
 
    private:
     Result(std::variant<OutT, ExceptionT>);
