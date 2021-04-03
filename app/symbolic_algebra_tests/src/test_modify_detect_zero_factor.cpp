@@ -31,7 +31,7 @@ TEST(ModifyDetectZeroFactor, OnEmptyProduct) {
     ASSERT_EQ(modified_expression.str(), "𝕀");
 }
 
-TEST(ModifyDetectZeroFactor, OnProductOfBosonPrimitiveOperators) {
+TEST(ModifyDetectZeroFactor, OnProductOfVars) {
     auto expression = (0_var * 4_var);
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪x_0◦x_4❫");
