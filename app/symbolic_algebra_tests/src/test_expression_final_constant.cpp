@@ -11,8 +11,8 @@ namespace sa = symbolic_algebra;
 using namespace sa::literals;
 
 //TEST(ExpressionBosonPrimitiveOperator, BosonCreationOperator) {
-//    const auto expression = 9_var;
-//    ASSERT_EQ(expression.str(), "x_9");
+//    const auto expression = 9.1_const;
+//    ASSERT_EQ(expression.str(), "9.1");
 //    ASSERT_EQ(expression.is_of_type<sa::BosonCreationOperator>(), true);
 //    ASSERT_EQ(expression.is_of_type<sa::BosonAnnihilationOperator>(), false);
 //    ASSERT_EQ(expression.is_of_type<sa::BosonNumberOperator>(), false);
@@ -24,7 +24,7 @@ using namespace sa::literals;
 //    ASSERT_EQ(boson->str(), "d");
 //    ASSERT_EQ(std::addressof(*boson), std::addressof(*d));
 //    {
-//        const auto expression1 = 9_var;
+//        const auto expression1 = 9.1_const;
 //        ASSERT_TRUE(expression.equals(expression1));
 //        ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
 //    }
@@ -40,15 +40,15 @@ using namespace sa::literals;
 //    }
 //    {
 //        const auto expression1 = expression.clone();
-//        ASSERT_EQ(expression1.str(), "x_9");
+//        ASSERT_EQ(expression1.str(), "9.1");
 //        ASSERT_TRUE(expression.equals(expression1));
 //        ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
 //    }
 //}
 
 //TEST(ExpressionBosonPrimitiveOperator, BosonAnnihilationOperator) {
-//    const auto expression = 10_var;
-//    ASSERT_EQ(expression.str(), "x_10");
+//    const auto expression = 10.2_const;
+//    ASSERT_EQ(expression.str(), "10.2");
 //    ASSERT_EQ(expression.is_of_type<sa::BosonCreationOperator>(), false);
 //    ASSERT_EQ(expression.is_of_type<sa::BosonAnnihilationOperator>(), true);
 //    ASSERT_EQ(expression.is_of_type<sa::BosonNumberOperator>(), false);
@@ -60,7 +60,7 @@ using namespace sa::literals;
 //    ASSERT_EQ(boson->str(), "d");
 //    ASSERT_EQ(std::addressof(*boson), std::addressof(*d));
 //    {
-//        const auto expression1 = 10_var;
+//        const auto expression1 = 10.2_const;
 //        ASSERT_TRUE(expression.equals(expression1));
 //        ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
 //    }
@@ -76,7 +76,7 @@ using namespace sa::literals;
 //    }
 //    {
 //        const auto expression1 = expression.clone();
-//        ASSERT_EQ(expression1.str(), "x_10");
+//        ASSERT_EQ(expression1.str(), "10.2");
 //        ASSERT_TRUE(expression.equals(expression1));
 //        ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
 //    }

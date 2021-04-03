@@ -10,8 +10,8 @@ using namespace sa::literals;
 using namespace sa::operators;
 
 TEST(ModifyDetectZeroProduct, OnBosonPrimitiveOperator) {
-    auto expression = 9_var;
-    ASSERT_EQ(expression.str(), "x_9");
+    auto expression = 9.1_const;
+    ASSERT_EQ(expression.str(), "9.1");
     //std::cout << expression.str() << std::endl;
     const auto modification_result = modify_detect_zero_product(std::move(expression));
     ASSERT_FALSE(modification_result);
@@ -36,7 +36,7 @@ TEST(ModifyDetectZeroProduct, OnProductOfBosonPrimitiveOperators) {
 TEST(ModifyDetectZeroProduct, OnFactorExpression) {
     auto expression = (4 * 4_var);
     //std::cout << expression.str() << std::endl;
-    ASSERT_EQ(expression.str(), "❪4x_4❫");
+    ASSERT_EQ(expression.str(), "❪4•x_4❫");
     const auto modification_result = modify_detect_zero_product(std::move(expression));
     ASSERT_FALSE(modification_result);
 }
@@ -44,7 +44,7 @@ TEST(ModifyDetectZeroProduct, OnFactorExpression) {
 TEST(ModifyDetectZeroProduct, OnNestedFactorExpression) {
     auto expression = (4 * (-6 * 4_var));
     //std::cout << expression.str() << std::endl;
-    ASSERT_EQ(expression.str(), "❪4❪-6x_4❫❫");
+    ASSERT_EQ(expression.str(), "❪4•❪-6•x_4❫❫");
     const auto modification_result = modify_detect_zero_product(std::move(expression));
     ASSERT_FALSE(modification_result);
 }

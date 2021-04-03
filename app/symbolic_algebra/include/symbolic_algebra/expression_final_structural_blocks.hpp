@@ -87,10 +87,10 @@ inline std::string RealFactoredExpression::str() const {
         }
         std::ostringstream out;
         out << _;
-        return out.str();
+        return out.str() + "•";
         //return std::to_string(_);
     };
-    return "❪" + fancy_to_string(_factor) + subexpression(0).target().str() + "❫"; // TODO consider: "•"
+    return "❪" + fancy_to_string(_factor) + subexpression(0).target().str() + "❫";
 }
 
 inline std::string RealFactoredExpression::repr() const {

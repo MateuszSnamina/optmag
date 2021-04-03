@@ -12,9 +12,9 @@ using namespace sa::literals;
 // ***  RealFactoredExpression                            ***
 // **********************************************************
 
-TEST(ExpressionStructuralBlocks, IntegerFactored) {
+TEST(ExpressionStructuralBlocks, RealFactoredExpression) {
     const auto expression = sa::RealFactoredExpression::make(-5, 3_var);
-    ASSERT_EQ(expression.str(), "❪-5x_3❫");
+    ASSERT_EQ(expression.str(), "❪-5•x_3❫");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
     ASSERT_EQ(expression.is_of_type<sa::ConstantExpression>(), false);
     ASSERT_EQ(expression.is_of_type<sa::ProductExpression>(), false);
@@ -57,7 +57,7 @@ TEST(ExpressionStructuralBlocks, IntegerFactored) {
     }
     {
         const auto expression1 = expression.clone();
-        ASSERT_EQ(expression1.str(), "❪-5x_3❫");
+        ASSERT_EQ(expression1.str(), "❪-5•x_3❫");
         ASSERT_TRUE(expression1.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
@@ -89,7 +89,7 @@ TEST(ExpressionStructuralBlocks, EmptyProcut) {
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
     {
-        const auto expression1 = sa::ProductExpression::make(10_var);
+        const auto expression1 = sa::ProductExpression::make(10.2_const);
         ASSERT_FALSE(expression.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
@@ -162,8 +162,8 @@ TEST(ExpressionStructuralBlocks, SingleChildProcut) {
 }
 
 TEST(ExpressionStructuralBlocks, ThreeChildrenProcut) {
-    const auto expression = sa::ProductExpression::make(3_var, 0_var, 10_var);
-    ASSERT_EQ(expression.str(), "❪x_3◦x_0◦x_10❫");
+    const auto expression = sa::ProductExpression::make(3_var, 0_var, 10.2_const);
+    ASSERT_EQ(expression.str(), "❪x_3◦x_0◦10.2❫");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
     ASSERT_EQ(expression.is_of_type<sa::ConstantExpression>(), false);
     ASSERT_EQ(expression.is_of_type<sa::ProductExpression>(), true);
@@ -175,15 +175,15 @@ TEST(ExpressionStructuralBlocks, ThreeChildrenProcut) {
     {
         ASSERT_EQ(expression.subexpression(0).str(), "x_3");
         ASSERT_EQ(expression.subexpression(1).str(), "x_0");
-        ASSERT_EQ(expression.subexpression(2).str(), "x_10");
+        ASSERT_EQ(expression.subexpression(2).str(), "10.2");
     }
     {
         ASSERT_EQ(expression.range()[0].str(), "x_3");
         ASSERT_EQ(expression.range()[1].str(), "x_0");
-        ASSERT_EQ(expression.range()[2].str(), "x_10");
+        ASSERT_EQ(expression.range()[2].str(), "10.2");
     }
     {
-        const auto expression1 = sa::ProductExpression::make(3_var, 0_var, 10_var);
+        const auto expression1 = sa::ProductExpression::make(3_var, 0_var, 10.2_const);
         ASSERT_TRUE(expression.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
@@ -203,13 +203,13 @@ TEST(ExpressionStructuralBlocks, ThreeChildrenProcut) {
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
     {
-        const auto expression1 = sa::SumExpression::make(3_var, 0_var, 10_var);
+        const auto expression1 = sa::SumExpression::make(3_var, 0_var, 10.2_const);
         ASSERT_FALSE(expression.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
     {
         const auto expression1 = expression.clone();
-        ASSERT_EQ(expression1.str(), "❪x_3◦x_0◦x_10❫");
+        ASSERT_EQ(expression1.str(), "❪x_3◦x_0◦10.2❫");
         ASSERT_TRUE(expression1.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
@@ -241,7 +241,7 @@ TEST(ExpressionStructuralBlocks, EmptySum) {
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
     {
-        const auto expression1 = sa::SumExpression::make(10_var);
+        const auto expression1 = sa::SumExpression::make(10.2_const);
         ASSERT_FALSE(expression.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
@@ -314,8 +314,8 @@ TEST(ExpressionStructuralBlocks, SingleChildSum) {
 }
 
 TEST(ExpressionStructuralBlocks, ThreeChildrenSum) {
-    const auto expression = sa::SumExpression::make(3_var, 0_var, 10_var);
-    ASSERT_EQ(expression.str(), "❴x_3+x_0+x_10❵");
+    const auto expression = sa::SumExpression::make(3_var, 0_var, 10.2_const);
+    ASSERT_EQ(expression.str(), "❴x_3+x_0+10.2❵");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
     ASSERT_EQ(expression.is_of_type<sa::ConstantExpression>(), false);
     ASSERT_EQ(expression.is_of_type<sa::ProductExpression>(), false);
@@ -327,15 +327,15 @@ TEST(ExpressionStructuralBlocks, ThreeChildrenSum) {
     {
         ASSERT_EQ(expression.subexpression(0).str(), "x_3");
         ASSERT_EQ(expression.subexpression(1).str(), "x_0");
-        ASSERT_EQ(expression.subexpression(2).str(), "x_10");
+        ASSERT_EQ(expression.subexpression(2).str(), "10.2");
     }
     {
         ASSERT_EQ(expression.range()[0].str(), "x_3");
         ASSERT_EQ(expression.range()[1].str(), "x_0");
-        ASSERT_EQ(expression.range()[2].str(), "x_10");
+        ASSERT_EQ(expression.range()[2].str(), "10.2");
     }
     {
-        const auto expression1 = sa::SumExpression::make(3_var, 0_var, 10_var);
+        const auto expression1 = sa::SumExpression::make(3_var, 0_var, 10.2_const);
         ASSERT_TRUE(expression.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
@@ -355,13 +355,13 @@ TEST(ExpressionStructuralBlocks, ThreeChildrenSum) {
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
     {
-        const auto expression1 = sa::ProductExpression::make(3_var, 0_var, 10_var);
+        const auto expression1 = sa::ProductExpression::make(3_var, 0_var, 10.2_const);
         ASSERT_FALSE(expression.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }
     {
         const auto expression1 = expression.clone();
-        ASSERT_EQ(expression1.str(), "❴x_3+x_0+x_10❵");
+        ASSERT_EQ(expression1.str(), "❴x_3+x_0+10.2❵");
         ASSERT_TRUE(expression1.equals(expression1));
         ASSERT_FALSE(std::addressof(expression.target()) == std::addressof(expression1.target()));
     }

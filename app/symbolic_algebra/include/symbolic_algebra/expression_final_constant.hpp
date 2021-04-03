@@ -3,6 +3,8 @@
 
 #include <symbolic_algebra/expression_abstract_common.hpp>
 
+#include<sstream>
+
 // **********************************************************
 // ***  ConstatnExpression                                ***
 // **********************************************************
@@ -62,7 +64,10 @@ inline bool ConstantExpression::equals(const Expression& other) const {
 }
 
 inline std::string ConstantExpression::str() const {
-    return std::to_string(value());
+    std::ostringstream out;
+    out << value();
+    return out.str();
+    //return std::to_string(value());
 }
 
 inline std::string ConstantExpression::repr() const {
