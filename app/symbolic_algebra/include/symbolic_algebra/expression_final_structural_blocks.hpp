@@ -3,6 +3,8 @@
 
 #include <symbolic_algebra/expression_abstract_common.hpp>
 
+#include <sstream>
+
 // References:
 // (1) list-of-all-unicodes-open-close-brackets:
 // https://stackoverflow.com/questions/13535172/list-of-all-unicodes-open-close-brackets
@@ -83,7 +85,10 @@ inline std::string RealFactoredExpression::str() const {
         if (_ == -1.0) {
             return "-";
         }
-        return std::to_string(_);
+        std::ostringstream out;
+        out << _;
+        return out.str();
+        //return std::to_string(_);
     };
     return "❪" + fancy_to_string(_factor) + subexpression(0).target().str() + "❫"; // TODO consider: "•"
 }
