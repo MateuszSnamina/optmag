@@ -1,12 +1,12 @@
-#ifndef BOSON_ALGEBRA_TEST_EXAMPLE_EXPRESSION_HPP
-#define BOSON_ALGEBRA_TEST_EXAMPLE_EXPRESSION_HPP
+#ifndef SYMBOLIC_ALGEBRA_TEST_EXAMPLE_EXPRESSION_HPP
+#define SYMBOLIC_ALGEBRA_TEST_EXAMPLE_EXPRESSION_HPP
 
 #include <symbolic_algebra/expression.hpp>
 #include <symbolic_algebra/expression_pragma.hpp>
 
-namespace ba = symbolic_algebra;
-using namespace ba::literals;
-using namespace ba::operators;
+namespace ca = symbolic_algebra;
+using namespace ca::literals;
+using namespace ca::operators;
 
 //inline symbolic_algebra::ExpressionHandler make_expression_1() {
 //    symbolic_algebra::ExpressionHandler expr01 = symbolic_algebra::ProductExpression::make('a'_cr, 'b'_an, (2 * 'c'_cr));

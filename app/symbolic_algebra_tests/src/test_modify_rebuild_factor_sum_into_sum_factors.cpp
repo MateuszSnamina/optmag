@@ -1,5 +1,5 @@
 // SELF:
-#include <symbolic_algebra_tests/example_expressions.hpp>
+#include <symbolic_algebra_tests/example_expressions.hpp-OLD>
 // TESTED LIBRARY:
 #include <symbolic_algebra/expression.hpp>
 #include <symbolic_algebra/expression_pragma.hpp>
