@@ -9,7 +9,7 @@ namespace sa = symbolic_algebra;
 using namespace sa::literals;
 using namespace sa::operators;
 
-TEST(ModifyDetectZeroFactor, OnBosonPrimitiveOperator) {
+TEST(ModifyDetectZeroFactor, OnConst) {
     auto expression = 9.1_const;
     ASSERT_EQ(expression.str(), "9.1");
     //std::cout << expression.str() << std::endl;
