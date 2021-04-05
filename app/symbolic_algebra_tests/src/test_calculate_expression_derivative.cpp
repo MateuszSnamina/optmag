@@ -16,7 +16,7 @@ using namespace sa::operators;
 TEST(CalculateExpressionDerivative, ProductDerivativeExpressionMaker) {
     const auto formal_arguments = sa::util::make<sa::ExpressionHandlerVector>(11.1_const, 12.1_const, 13.1_const, 14.1_const);
     const sa::ExpressionHandler derrivative_expression = sa::derivatives_table::ProductDerivativeExpressionMaker{}.make(2, formal_arguments);
-    ASSERT_EQ(derrivative_expression.str(), "❪11.6◦12.6◦14.6❫");
+    ASSERT_EQ(derrivative_expression.str(), "❪11.1◦12.1◦14.1❫");
 }
 
 TEST(CalculateExpressionDerivative, SumDerivativeExpressionMaker) {

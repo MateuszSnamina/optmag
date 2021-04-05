@@ -11,6 +11,11 @@
 namespace sa = symbolic_algebra;
 using namespace sa::literals;
 
+
+//TODO: everything
+//TODO: the same for VariableExpression
+
+
 TEST(ExpressionBosonPrimitiveOperator, ConstantExpression) {
     const auto expression = 9.1_const;
     ASSERT_EQ(expression.str(), "9.1");

@@ -4,7 +4,7 @@
 #include <symbolic_algebra/expression_abstract_common.hpp>
 
 // **********************************************************
-// ***  ConstatnExpression                                ***
+// ***  VariableExpression                                ***
 // **********************************************************
 
 namespace symbolic_algebra {
