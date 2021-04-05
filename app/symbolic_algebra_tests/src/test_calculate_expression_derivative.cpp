@@ -4,6 +4,8 @@
 #include <symbolic_algebra/expression_pragma.hpp>
 #include <symbolic_algebra/expression.hpp>
 #include <symbolic_algebra/calculate_expression_derivative.hpp>
+#include <symbolic_algebra/util_make.hpp>
+
 // GTEST:
 #include <gtest/gtest.h>
 
@@ -12,27 +14,13 @@ using namespace sa::literals;
 using namespace sa::operators;
 
 TEST(CalculateExpressionDerivative, ProductDerivativeExpressionMaker) {
-    const sa::ExpressionHandlerVector formal_arguments = [](){
-        sa::ExpressionHandlerVector expression_handler_vector;// {11.1_const, 12.1_const, 13.1_const, 14.1_const};
-        expression_handler_vector.push_back(11.6_const);
-        expression_handler_vector.push_back(12.6_const);
-        expression_handler_vector.push_back(13.6_const);
-        expression_handler_vector.push_back(14.6_const);
-        return expression_handler_vector;
-    }();
+    const auto formal_arguments = sa::util::make<sa::ExpressionHandlerVector>(11.1_const, 12.1_const, 13.1_const, 14.1_const);
     const sa::ExpressionHandler derrivative_expression = sa::derivatives_table::ProductDerivativeExpressionMaker{}.make(2, formal_arguments);
     ASSERT_EQ(derrivative_expression.str(), "❪11.6◦12.6◦14.6❫");
 }
 
 TEST(CalculateExpressionDerivative, SumDerivativeExpressionMaker) {
-    const sa::ExpressionHandlerVector formal_arguments = [](){
-        sa::ExpressionHandlerVector expression_handler_vector;
-        expression_handler_vector.push_back(11.6_const);
-        expression_handler_vector.push_back(12.6_const);
-        expression_handler_vector.push_back(13.6_const);
-        expression_handler_vector.push_back(14.6_const);
-        return expression_handler_vector;
-    }();
+    const auto formal_arguments = sa::util::make<sa::ExpressionHandlerVector>(11.1_const, 12.1_const, 13.1_const, 14.1_const);
     const sa::ExpressionHandler derrivative_expression = sa::derivatives_table::SumDerivativeExpressionMaker{}.make(2, formal_arguments);
     ASSERT_EQ(derrivative_expression.str(), "1");
 }
@@ -126,11 +114,10 @@ TEST(CalculateExpressionDerivative, MinimalExample2) {
     ASSERT_EQ(derrivative_expression.str(), "❪4•❴❪1◦0❫+❪1◦0❫+❪1◦0❫+❪1◦0❫❵❫");
 }
 
-//TEST(CalculateExpressionDerivative, MinimalExample3) {
-//    auto expression = (4 * sa::SumExpression::make(10.2_const, 0_var, (2 * 6.1_const)));
-//    //std::cout << expression.str() << std::endl;
-//    ASSERT_EQ(expression.str(), "❪4•❴10.2+x_0+❪2•6.1❫❵❫");
-//    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
-//    ASSERT_EQ(derrivative_expression.str(), "❪-5.6•0❫");
-//}
-
+TEST(CalculateExpressionDerivative, MinimalExample3) {
+    auto expression = (4 * sa::SumExpression::make(10.2_const, 2_var, (2 * 2_var)));
+    //std::cout << expression.str() << std::endl;
+    ASSERT_EQ(expression.str(), "❪4•❴10.2+x_2+❪2•x_2❫❵❫");
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❪4•❴❪1◦0❫+❪1◦1❫+❪1◦❪2•1❫❫❵❫");
+}
