@@ -16,7 +16,7 @@ TEST(CalculateExpressionValue, OnConst) {
     ASSERT_EQ(expression.str(), "9.1");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, 9.1);
+    ASSERT_DOUBLE_EQ(value, 9.1);
 }
 
 TEST(CalculateExpressionValue, OnVar) {
@@ -24,7 +24,7 @@ TEST(CalculateExpressionValue, OnVar) {
     ASSERT_EQ(expression.str(), "x_3");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9});
-    ASSERT_EQ(value, -8.9);
+    ASSERT_DOUBLE_EQ(value, -8.9);
 }
 
 TEST(CalculateExpressionValue, OnRealFactored1) {
@@ -32,7 +32,7 @@ TEST(CalculateExpressionValue, OnRealFactored1) {
     ASSERT_EQ(expression.str(), "❪4•9.1❫");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, 4 * 9.1);
+    ASSERT_DOUBLE_EQ(value, 4 * 9.1);
 }
 
 TEST(CalculateExpressionValue, OnRealFactored2) {
@@ -40,7 +40,7 @@ TEST(CalculateExpressionValue, OnRealFactored2) {
     ASSERT_EQ(expression.str(), "❪-5.6•9.1❫");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, (-5.6) * 9.1);
+    ASSERT_DOUBLE_EQ(value, (-5.6) * 9.1);
 }
 
 TEST(CalculateExpressionValue, OnRealFactored3) {
@@ -84,7 +84,7 @@ TEST(CalculateExpressionValue, OnProductThreeConsts) {
     ASSERT_EQ(expression.str(), "❪4.2◦1.7◦3.2❫");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, 4.2 * 1.7 * 3.2);
+    ASSERT_DOUBLE_EQ(value, 4.2 * 1.7 * 3.2);
 }
 
 TEST(CalculateExpressionValue, OnEmptySum) {
@@ -93,7 +93,7 @@ TEST(CalculateExpressionValue, OnEmptySum) {
     ASSERT_EQ(expression.str(), "𝟘");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, 0);
+    ASSERT_DOUBLE_EQ(value, 0);
 }
 
 TEST(CalculateExpressionValue, OnSumOneConst) {
@@ -102,7 +102,7 @@ TEST(CalculateExpressionValue, OnSumOneConst) {
     ASSERT_EQ(expression.str(), "❴4.2❵");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, 4.2);
+    ASSERT_DOUBLE_EQ(value, 4.2);
 }
 
 TEST(CalculateExpressionValue, OnSumTwoConsts) {
@@ -111,7 +111,7 @@ TEST(CalculateExpressionValue, OnSumTwoConsts) {
     ASSERT_EQ(expression.str(), "❴4.2+1.7❵");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, 4.2 + 1.7);
+    ASSERT_DOUBLE_EQ(value, 4.2 + 1.7);
 }
 
 TEST(CalculateExpressionValue, OnSumThreeConsts) {
@@ -120,7 +120,7 @@ TEST(CalculateExpressionValue, OnSumThreeConsts) {
     ASSERT_EQ(expression.str(), "❴4.2+1.7+3.2❵");
     //std::cout << expression.str() << std::endl;
     const auto value = sa::calculate_expression_value(expression, arma::vec{});
-    ASSERT_EQ(value, 4.2 + 1.7 + 3.2);
+    ASSERT_DOUBLE_EQ(value, 4.2 + 1.7 + 3.2);
 }
 
 TEST(CalculateExpressionValue, MinimalExample1) {
@@ -128,7 +128,7 @@ TEST(CalculateExpressionValue, MinimalExample1) {
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪x_0◦❴x_4+6.1❵◦9.1❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, (+1.2)*((-11.3)+6.1)*9.1);
+    ASSERT_DOUBLE_EQ(value, (+1.2)*((-11.3)+6.1)*9.1);
 }
 
 TEST(CalculateExpressionValue, MinimalExample2) {
@@ -136,7 +136,7 @@ TEST(CalculateExpressionValue, MinimalExample2) {
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪x_0◦❴x_4+6.1❵❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, (+1.2)*((-11.3)+6.1));
+    ASSERT_DOUBLE_EQ(value, (+1.2)*((-11.3)+6.1));
 }
 
 TEST(CalculateExpressionValue, MinimalExample3) {
@@ -144,7 +144,7 @@ TEST(CalculateExpressionValue, MinimalExample3) {
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪❴x_4+6.1❵◦9.1❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, ((-11.3)+6.1)*9.1);
+    ASSERT_DOUBLE_EQ(value, ((-11.3)+6.1)*9.1);
 }
 
 TEST(CalculateExpressionValue, MinimalExample4) {
@@ -152,7 +152,7 @@ TEST(CalculateExpressionValue, MinimalExample4) {
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪❴x_4+6.1❵❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, (-11.3)+6.1);
+    ASSERT_DOUBLE_EQ(value, (-11.3)+6.1);
 }
 
 TEST(CalculateExpressionValue, MinimalExample5) {
@@ -160,7 +160,7 @@ TEST(CalculateExpressionValue, MinimalExample5) {
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪𝟘❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, 0);
+    ASSERT_DOUBLE_EQ(value, 0);
 }
 
 TEST(CalculateExpressionValue, MinimalExample6) {
@@ -168,19 +168,19 @@ TEST(CalculateExpressionValue, MinimalExample6) {
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪❴x_4+6.1❵◦❪2•9.1❫❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, ((-11.3)+6.1)*(2*9.1));}
+    ASSERT_DOUBLE_EQ(value, ((-11.3)+6.1)*(2*9.1));}
 
 TEST(CalculateExpressionValue, MinimalExample7) {
     auto expression = sa::ProductExpression::make(0_var, (4_var * 6.1_const), 9.1_const);
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪x_0◦❪x_4◦6.1❫◦9.1❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, (+1.2)*((-11.3)*6.1)*9.1);}
+    ASSERT_DOUBLE_EQ(value, (+1.2)*((-11.3)*6.1)*9.1);}
 
 TEST(CalculateExpressionValue, MinimalExample8) {
     auto expression = (sa::SumExpression::make_zero() * 9.1_const);
     //std::cout << expression.str() << std::endl;
     ASSERT_EQ(expression.str(), "❪𝟘◦9.1❫");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_EQ(value, 0*9.1);
+    ASSERT_DOUBLE_EQ(value, 0*9.1);
 }

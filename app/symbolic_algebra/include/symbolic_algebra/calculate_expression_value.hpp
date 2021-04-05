@@ -14,7 +14,7 @@
 
 namespace symbolic_algebra {
 
-double calculate_expression_value(const ExpressionHandler& expression_handler, const arma::vec& x) {
+inline double calculate_expression_value(const ExpressionHandler& expression_handler, const arma::vec& x) {
 
     const auto calculate_expression_value_closure = [&x](const ExpressionHandler& expression_handler) {
         return calculate_expression_value(expression_handler, x);
