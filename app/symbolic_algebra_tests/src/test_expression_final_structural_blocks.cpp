@@ -12,7 +12,7 @@ using namespace sa::literals;
 // ***  RealFactoredExpression                            ***
 // **********************************************************
 
-TEST(ExpressionStructuralBlocks, RealFactoredExpression) {
+TEST(FinalExpressionStructuralBlocks, RealFactoredExpression) {
     const auto expression = sa::RealFactoredExpression::make(-5, 3_var);
     ASSERT_EQ(expression.str(), "❪-5•x_3❫");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
@@ -67,7 +67,7 @@ TEST(ExpressionStructuralBlocks, RealFactoredExpression) {
 // ***  ProdExpression                                    ***
 // **********************************************************
 
-TEST(ExpressionStructuralBlocks, EmptyProcut) {
+TEST(FinalExpressionStructuralBlocks, EmptyProcut) {
     const auto expression = sa::ProductExpression::make();
     ASSERT_EQ(expression.str(), "𝕀");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
@@ -111,7 +111,7 @@ TEST(ExpressionStructuralBlocks, EmptyProcut) {
     }
 }
 
-TEST(ExpressionStructuralBlocks, SingleChildProcut) {
+TEST(FinalExpressionStructuralBlocks, SingleChildProcut) {
     const auto expression = sa::ProductExpression::make(3_var);
     ASSERT_EQ(expression.str(), "❪x_3❫");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
@@ -161,7 +161,7 @@ TEST(ExpressionStructuralBlocks, SingleChildProcut) {
     }
 }
 
-TEST(ExpressionStructuralBlocks, ThreeChildrenProcut) {
+TEST(FinalExpressionStructuralBlocks, ThreeChildrenProcut) {
     const auto expression = sa::ProductExpression::make(3_var, 0_var, 10.2_const);
     ASSERT_EQ(expression.str(), "❪x_3◦x_0◦10.2❫");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
@@ -219,7 +219,7 @@ TEST(ExpressionStructuralBlocks, ThreeChildrenProcut) {
 // ***  SumExpression                                     ***
 // **********************************************************
 
-TEST(ExpressionStructuralBlocks, EmptySum) {
+TEST(FinalExpressionStructuralBlocks, EmptySum) {
     const auto expression = sa::SumExpression::make();
     ASSERT_EQ(expression.str(), "𝟘");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
@@ -263,7 +263,7 @@ TEST(ExpressionStructuralBlocks, EmptySum) {
     }
 }
 
-TEST(ExpressionStructuralBlocks, SingleChildSum) {
+TEST(FinalExpressionStructuralBlocks, SingleChildSum) {
     const auto expression = sa::SumExpression::make(3_var);
     ASSERT_EQ(expression.str(), "❴x_3❵");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);
@@ -313,7 +313,7 @@ TEST(ExpressionStructuralBlocks, SingleChildSum) {
     }
 }
 
-TEST(ExpressionStructuralBlocks, ThreeChildrenSum) {
+TEST(FinalExpressionStructuralBlocks, ThreeChildrenSum) {
     const auto expression = sa::SumExpression::make(3_var, 0_var, 10.2_const);
     ASSERT_EQ(expression.str(), "❴x_3+x_0+10.2❵");
     ASSERT_EQ(expression.is_of_type<sa::VariableExpression>(), false);

@@ -16,7 +16,7 @@ using namespace sa::literals;
 //TODO: the same for VariableExpression
 
 
-TEST(ExpressionBosonPrimitiveOperator, ConstantExpression) {
+TEST(FinalExpressionBosonPrimitiveOperator, ConstantExpression) {
     const auto expression = 9.1_const;
     ASSERT_EQ(expression.str(), "9.1");
     ASSERT_EQ(expression.is_of_type<sa::ConstantExpression>(), true);

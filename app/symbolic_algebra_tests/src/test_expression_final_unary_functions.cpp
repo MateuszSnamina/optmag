@@ -23,14 +23,14 @@ namespace sa = symbolic_algebra;
 using namespace sa::literals;
 using namespace sa::operators;
 
-TEST(ExpressionUnaryFunction, WithFunctionPointer) {
+TEST(FinalExpressionUnaryFunction, WithFunctionPointer) {
     auto sub_expression = 9.1_const;
     using FunctionPtrT = double(*)(double);
     const auto expression = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
 }
 
-TEST(ExpressionUnaryFunction, WithFunctional) {
+TEST(FinalExpressionUnaryFunction, WithFunctional) {
     auto sub_expression = 9.1_const;
     using FunctionalT = std::function<double(double)>;
     const FunctionalT foo2_functional = [](double x){return 2.5 * x + 6.7;};
@@ -38,7 +38,7 @@ TEST(ExpressionUnaryFunction, WithFunctional) {
     ASSERT_EQ(expression.str(), "foo2⦗9.1⦘");
 }
 
-TEST(ExpressionUnaryFunction, WithCustomFunctor) {
+TEST(FinalExpressionUnaryFunction, WithCustomFunctor) {
     auto sub_expression = 9.1_const;
     struct CustomFunctorT {
         double operator()(double x){
@@ -49,7 +49,7 @@ TEST(ExpressionUnaryFunction, WithCustomFunctor) {
     ASSERT_EQ(expression.str(), "foo3⦗9.1⦘");
 }
 
-TEST(ExpressionUnaryFunction, WithLambda) {
+TEST(FinalExpressionUnaryFunction, WithLambda) {
     auto sub_expression = 9.1_const;
     const auto foo4_lambda = [](double x){return 2.5 * x + 6.7;};
     using LambdaT = decltype(foo4_lambda);
@@ -57,14 +57,14 @@ TEST(ExpressionUnaryFunction, WithLambda) {
     ASSERT_EQ(expression.str(), "foo4⦗9.1⦘");
 }
 
-TEST(UnaryFunctionStaticExpression, WithFunctionPointer) {
+TEST(FinalExpressionUnaryFunctionStaticExpression, WithFunctionPointer) {
     auto sub_expression = 9.1_const;
     using FunctionPtrT = double(*)(double);
     const auto expression = sa::UnaryFunctionStaticExpression<&foo1_name, FunctionPtrT, foo1_function>::make(std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
 }
 
-//TEST(UnaryFunctionStaticExpression, WithFunctional) {
+//TEST(FinalExpressionUnaryFunctionStaticExpression, WithFunctional) {
 //    // C++20 ??
 //    auto sub_expression = 9.1_const;
 //    using FunctionalT = std::function<double(double)>;
@@ -73,7 +73,7 @@ TEST(UnaryFunctionStaticExpression, WithFunctionPointer) {
 //    //ASSERT_EQ(expression.str(), "foo2⦗9.1⦘");
 //}
 
-//TEST(UnaryFunctionStaticExpression, WithCustomFunctor) {
+//TEST(FinalExpressionUnaryFunctionStaticExpression, WithCustomFunctor) {
 //    // C++20 ??
 //    auto sub_expression = 9.1_const;
 //    struct CustomFunctorT {
