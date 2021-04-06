@@ -16,7 +16,7 @@ namespace symbolic_algebra {
 template<class T>
 struct FunctionObjectComparator {
     bool compare(const T&, const T&) const {
-        std::cout << "Generic comparator => return false" << std::endl;
+        // std::cout << "Generic comparator => return false" << std::endl;
         return false;
     }
 };
@@ -25,9 +25,9 @@ template<>
 struct FunctionObjectComparator<double(*)(double)> {
     using FunctionPointer = double(*)(double);
     bool compare(const FunctionPointer& lhs, const FunctionPointer& rhs) const {
-        std::cout << "lhs : " << lhs << std::endl;
-        std::cout << "rhs : " << rhs << std::endl;
-        std::cout << "Specialized comparator => return " << (lhs == rhs)<< std::endl;
+        // std::cout << "lhs : " << lhs << std::endl;
+        // std::cout << "rhs : " << rhs << std::endl;
+        // std::cout << "Specialized comparator => return " << (lhs == rhs) << std::endl;
         return lhs == rhs;
     }
 };
@@ -42,6 +42,29 @@ namespace symbolic_algebra {
 
 // For using string as template param, ref here:
 // https://stackoverflow.com/questions/1826464/c-style-strings-as-template-arguments
+
+/*
+ * UnaryFunctionT may be:
+ * - `doube(*)(doube)`,
+ * - `<lambda type>` for `double(double)` function,
+ * - `std::function<double(double)>`,
+ * - any custom callable object, with `double CustomType::operator()(double) [const]` defined.
+ *
+ * Note: the UnaryFunctionExpression comparison
+ * `UnaryFunctionExpression<...>::equals(const Expression& other)`
+ * is defined as follow:
+ * - `UnaryFunctionExpression<...>` with `UnaryFunctionT := doube(*)(doube)`
+ *   compares the underlying pointers,
+ * - with other `UnaryFunctionT` the comparson always returns `false`.
+ * The function name is not taken into account in comparison.
+ *
+ * The comparison logic may be perceived as a flaw.
+ * Do not be suprrised that an UnaryFunctionT instance
+ * is not equal to its clone.
+ *
+ * The UnaryFunctionT works really good with `UnaryFunctionT := doube(*)(doube)`.
+ *
+ */
 
 template<const char** name, class UnaryFunctionT>
 class UnaryFunctionExpression final : public BridgeExpression {
@@ -105,11 +128,9 @@ bool UnaryFunctionExpression<name, UnaryFunctionT>::equals(const Expression& oth
     }
     const auto& casted_other = *casted_other_ptr;
     if (!FunctionObjectComparator<UnaryFunctionT>{}.compare(_function, casted_other._function)) {
-        std::cout << "NOT EQUAS AS FUNCTIONS NOT EQUAL" << std::endl;
         return false;
     }
     if (!subexpression(0).equals(other.subexpression(0))) {
-        std::cout << "NOT EQUAS AS SUBEXPRESSIONS NOT EQUAL" << std::endl;
         return false;
     }
     std::cout << "EQUALS" << std::endl;

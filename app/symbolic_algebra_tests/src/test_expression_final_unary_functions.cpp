@@ -61,6 +61,27 @@ TEST(FinalExpressionUnaryFunction, WithFunctional) {
     const FunctionalT foo2_functional = [](double x){return 2.5 * x + 6.7;};
     const auto expression = sa::UnaryFunctionExpression<&foo2_name, FunctionalT>::make(foo2_functional, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo2⦗9.1⦘");
+    {
+        const auto expression1 = 9.1_const;
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo2_name, FunctionalT>::make(foo2_functional, 9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo2_name, FunctionalT>::make(foo2_functional, 9.2_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo2_name, FunctionalT>::make(foo2_functional, 9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression_clone = expression.clone();
+        ASSERT_EQ(expression.str(), "foo2⦗9.1⦘");
+        ASSERT_FALSE(expression.equals(expression_clone));
+    }
 }
 
 TEST(FinalExpressionUnaryFunction, WithCustomFunctor) {
@@ -72,6 +93,27 @@ TEST(FinalExpressionUnaryFunction, WithCustomFunctor) {
     } foo3_custom_functor;
     const auto expression = sa::UnaryFunctionExpression<&foo3_name, CustomFunctorT>::make(foo3_custom_functor, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo3⦗9.1⦘");
+    {
+        const auto expression1 = 9.1_const;
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo3_name, CustomFunctorT>::make(foo3_custom_functor, 9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo3_name, CustomFunctorT>::make(foo3_custom_functor, 9.2_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo3_name, CustomFunctorT>::make(foo3_custom_functor, 9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression_clone = expression.clone();
+        ASSERT_EQ(expression.str(), "foo3⦗9.1⦘");
+        ASSERT_FALSE(expression.equals(expression_clone));
+    }
 }
 
 TEST(FinalExpressionUnaryFunction, WithLambda) {
@@ -80,6 +122,27 @@ TEST(FinalExpressionUnaryFunction, WithLambda) {
     using LambdaT = decltype(foo4_lambda);
     const auto expression = sa::UnaryFunctionExpression<&foo4_name, LambdaT>::make(foo4_lambda, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo4⦗9.1⦘");
+    {
+        const auto expression1 = 9.1_const;
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo4_name, LambdaT>::make(foo4_lambda, 9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo4_name, LambdaT>::make(foo4_lambda, 9.2_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo4_name, LambdaT>::make(foo4_lambda, 9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression_clone = expression.clone();
+        ASSERT_EQ(expression.str(), "foo4⦗9.1⦘");
+        ASSERT_FALSE(expression.equals(expression_clone));
+    }
 }
 
 TEST(FinalExpressionUnaryFunctionStaticExpression, WithFunctionPointer) {
@@ -87,6 +150,27 @@ TEST(FinalExpressionUnaryFunctionStaticExpression, WithFunctionPointer) {
     using FunctionPtrT = double(*)(double);
     const auto expression = sa::UnaryFunctionStaticExpression<&foo1_name, FunctionPtrT, foo1_function>::make(std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
+    {
+        const auto expression1 = 9.1_const;
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionStaticExpression<&foo1_name, FunctionPtrT, foo1_function>::make(9.1_const);
+        ASSERT_TRUE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionStaticExpression<&foo1_name, FunctionPtrT, foo1_function>::make(9.2_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionStaticExpression<&foo1_name, FunctionPtrT, foo1_function_re>::make(9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression_clone = expression.clone();
+        ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
+        ASSERT_TRUE(expression.equals(expression_clone));
+    }
 }
 
 //TEST(FinalExpressionUnaryFunctionStaticExpression, WithFunctional) {
