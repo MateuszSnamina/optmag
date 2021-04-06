@@ -19,7 +19,7 @@
 namespace symbolic_algebra::derivatives_table {
 
 /*
- * derivatives_table is produce expression
+ * derivatives_tabl is produce expression
  *
  * ∂/∂a_index f(a_1, a_2, ... , a_n) |_{a_1 = formal_argument_1, a_2 = formal_argument_2}
  *
@@ -79,8 +79,8 @@ struct InvDerivativeExpressionMaker {
         const auto n_formal_arguments = boost::size(formal_arguments);
         assert(n_formal_arguments == 1);
         assert(index == 0);
-        //const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
-        throw std::runtime_error("NOT IMPLEMENTED.");
+        const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
+        return ProductExpression::make(ConstantExpression::make(-1.0), InvExpression::make(SqExpression::make(formal_argument.clone())));
     }
 };
 
@@ -90,8 +90,8 @@ struct SqDerivativeExpressionMaker {
         const auto n_formal_arguments = boost::size(formal_arguments);
         assert(n_formal_arguments == 1);
         assert(index == 0);
-        //const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
-        throw std::runtime_error("NOT IMPLEMENTED.");
+        const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
+        return ProductExpression::make(ConstantExpression::make(2.0), formal_argument.clone());
     }
 };
 
@@ -101,8 +101,8 @@ struct CbDerivativeExpressionMaker {
         const auto n_formal_arguments = boost::size(formal_arguments);
         assert(n_formal_arguments == 1);
         assert(index == 0);
-        //const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
-        throw std::runtime_error("NOT IMPLEMENTED.");
+        const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
+        return ProductExpression::make(ConstantExpression::make(3.0), SqExpression::make(formal_argument.clone()));
     }
 };
 
@@ -251,8 +251,8 @@ struct ExpDerivativeExpressionMaker {
         const auto n_formal_arguments = boost::size(formal_arguments);
         assert(n_formal_arguments == 1);
         assert(index == 0);
-        //const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
-        throw std::runtime_error("NOT IMPLEMENTED.");
+        const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
+        return ExpExpression::make(formal_argument.clone());
     }
 };
 

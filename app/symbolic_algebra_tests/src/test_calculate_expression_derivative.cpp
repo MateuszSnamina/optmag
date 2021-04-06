@@ -12,6 +12,7 @@
 namespace sa = symbolic_algebra;
 using namespace sa::literals;
 using namespace sa::operators;
+using namespace sa::math;
 
 TEST(CalculateExpressionDerivative, ProductDerivativeExpressionMaker) {
     const auto formal_arguments = sa::util::make<sa::ExpressionHandlerVector>(11.1_const, 12.1_const, 13.1_const, 14.1_const);
@@ -47,6 +48,30 @@ TEST(CalculateExpressionDerivative, OnVar1) {
     //std::cout << expression.str() << std::endl;
     const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
     ASSERT_EQ(derrivative_expression.str(), "1");
+}
+
+TEST(CalculateExpressionDerivative, OnSin) {
+    const auto expression = sin(2_var);
+    ASSERT_EQ(expression.str(), "sin⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪cos⦗x_2⦘◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnCos) {
+    const auto expression = cos(2_var);
+    ASSERT_EQ(expression.str(), "cos⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪❪-1◦sin⦗x_2⦘❫◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnTan) {
+    const auto expression = tan(2_var);
+    ASSERT_EQ(expression.str(), "tan⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪inv⦗sq⦗cos⦗x_2⦘⦘⦘◦1❫❵");
 }
 
 TEST(CalculateExpressionDerivative, OnRealFactored1) {
