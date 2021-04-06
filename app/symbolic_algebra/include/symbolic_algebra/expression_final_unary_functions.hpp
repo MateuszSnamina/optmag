@@ -5,8 +5,6 @@
 
 #include<string>
 
-#include<iostream> // TODO remove
-
 // **********************************************************
 // ***  FunctionObjectComparator                          ***
 // **********************************************************
@@ -48,7 +46,7 @@ namespace symbolic_algebra {
  * - `doube(*)(doube)`,
  * - `<lambda type>` for `double(double)` function,
  * - `std::function<double(double)>`,
- * - any custom callable object, with `double CustomType::operator()(double) [const]` defined.
+ * - any custom callable object, with `double CustomType::operator()(double) const` defined.
  *
  * Note: the UnaryFunctionExpression comparison
  * `UnaryFunctionExpression<...>::equals(const Expression& other)`
@@ -93,7 +91,7 @@ private:
     friend symbolic_algebra::ExpressionHandler symbolic_algebra::ExpressionHandler::make(Args&&...);
 
 private:
-    UnaryFunctionT _function;
+    const UnaryFunctionT _function;
 };
 
 template<const char** name, class UnaryFunctionT>
@@ -123,7 +121,6 @@ bool UnaryFunctionExpression<name, UnaryFunctionT>::equals(const Expression& oth
     using SelfT = UnaryFunctionExpression<name, UnaryFunctionT>;
     const auto casted_other_ptr = dynamic_cast<const SelfT*>(&other);
     if (!casted_other_ptr) {
-        std::cout << "NOT EQUAS AS OTHER TYPE" << std::endl;
         return false;
     }
     const auto& casted_other = *casted_other_ptr;
@@ -133,7 +130,6 @@ bool UnaryFunctionExpression<name, UnaryFunctionT>::equals(const Expression& oth
     if (!subexpression(0).equals(other.subexpression(0))) {
         return false;
     }
-    std::cout << "EQUALS" << std::endl;
     return true;
 }
 
@@ -183,7 +179,7 @@ public:
     bool equals(const Expression&) const override;
     std::string str() const override;
     std::string repr() const override;
-    const UnaryFunction& function() const;
+    const UnaryFunction function() const;
     std::string function_name() const;
 
 private:
@@ -240,8 +236,8 @@ std::string UnaryFunctionStaticExpression<name, UnaryFunctionT, functionStatic>:
 }
 
 template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>
-const UnaryFunctionT& UnaryFunctionStaticExpression<name, UnaryFunctionT, functionStatic>::function() const {
-    return function;
+const UnaryFunctionT UnaryFunctionStaticExpression<name, UnaryFunctionT, functionStatic>::function() const {
+    return functionStatic;
 }
 
 template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>
