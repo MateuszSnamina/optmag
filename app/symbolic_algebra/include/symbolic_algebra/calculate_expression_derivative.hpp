@@ -141,15 +141,14 @@ struct TanDerivativeExpressionMaker {
     }
 };
 
-
 struct AsinDerivativeExpressionMaker {
     template<class FomalArgumentExpressionsRange>
     ExpressionHandler make(const unsigned index, const FomalArgumentExpressionsRange& formal_arguments) {
         const auto n_formal_arguments = boost::size(formal_arguments);
         assert(n_formal_arguments == 1);
         assert(index == 0);
-        //const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
-        throw std::runtime_error("NOT IMPLEMENTED.");
+        const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
+        return InvExpression::make(SqrtExpression::make(SumExpression::make(ConstantExpression::make(1.0), ProductExpression::make(ConstantExpression::make(-1.0), SqExpression::make(formal_argument.clone())))));
     }
 };
 
@@ -160,7 +159,8 @@ struct AcosDerivativeExpressionMaker {
         assert(n_formal_arguments == 1);
         assert(index == 0);
         //const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
-        throw std::runtime_error("NOT IMPLEMENTED.");
+        ExpressionHandler asin_derivative = AsinDerivativeExpressionMaker{}.make(0u, formal_arguments);
+        return ProductExpression::make(ConstantExpression::make(-1.0), asin_derivative);
     }
 };
 
@@ -170,8 +170,8 @@ struct AtanDerivativeExpressionMaker {
         const auto n_formal_arguments = boost::size(formal_arguments);
         assert(n_formal_arguments == 1);
         assert(index == 0);
-        //const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
-        throw std::runtime_error("NOT IMPLEMENTED.");
+        const ExpressionHandler& formal_argument = *std::begin(formal_arguments);
+        return InvExpression::make(SumExpression::make(ConstantExpression::make(1.0), SqExpression::make(formal_argument.clone())));
     }
 };
 
