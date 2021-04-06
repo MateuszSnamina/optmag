@@ -5,6 +5,35 @@
 
 #include<string>
 
+#include<iostream> // TODO remove
+
+// **********************************************************
+// ***  FunctionObjectComparator                          ***
+// **********************************************************
+
+namespace symbolic_algebra {
+
+template<class T>
+struct FunctionObjectComparator {
+    bool compare(const T&, const T&) const {
+        std::cout << "Generic comparator => return false" << std::endl;
+        return false;
+    }
+};
+
+template<>
+struct FunctionObjectComparator<double(*)(double)> {
+    using FunctionPointer = double(*)(double);
+    bool compare(const FunctionPointer& lhs, const FunctionPointer& rhs) const {
+        std::cout << "lhs : " << lhs << std::endl;
+        std::cout << "rhs : " << rhs << std::endl;
+        std::cout << "Specialized comparator => return " << (lhs == rhs)<< std::endl;
+        return lhs == rhs;
+    }
+};
+
+}
+
 // **********************************************************
 // ***  UnaryFunctionExpression                           ***
 // **********************************************************
@@ -71,15 +100,19 @@ bool UnaryFunctionExpression<name, UnaryFunctionT>::equals(const Expression& oth
     using SelfT = UnaryFunctionExpression<name, UnaryFunctionT>;
     const auto casted_other_ptr = dynamic_cast<const SelfT*>(&other);
     if (!casted_other_ptr) {
+        std::cout << "NOT EQUAS AS OTHER TYPE" << std::endl;
         return false;
     }
     const auto& casted_other = *casted_other_ptr;
-    if (std::addressof(_function) != std::addressof(casted_other._function)) {
+    if (!FunctionObjectComparator<UnaryFunctionT>{}.compare(_function, casted_other._function)) {
+        std::cout << "NOT EQUAS AS FUNCTIONS NOT EQUAL" << std::endl;
         return false;
     }
     if (!subexpression(0).equals(other.subexpression(0))) {
+        std::cout << "NOT EQUAS AS SUBEXPRESSIONS NOT EQUAL" << std::endl;
         return false;
     }
+    std::cout << "EQUALS" << std::endl;
     return true;
 }
 

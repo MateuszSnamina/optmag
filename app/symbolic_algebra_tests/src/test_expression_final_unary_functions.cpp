@@ -12,6 +12,10 @@ double foo1_function(double x) {
     return 2.5 * x + 6.7;
 }
 
+double foo1_function_re(double x) {
+    return 2.5 * x + 6.7;
+}
+
 }
 
 const char* foo1_name = "foo1";
@@ -24,10 +28,31 @@ using namespace sa::literals;
 using namespace sa::operators;
 
 TEST(FinalExpressionUnaryFunction, WithFunctionPointer) {
-    auto sub_expression = 9.1_const;
     using FunctionPtrT = double(*)(double);
+    auto sub_expression = 9.1_const;
     const auto expression = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
+    {
+        const auto expression1 = 9.1_const;
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function, 9.1_const);
+        ASSERT_TRUE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function, 9.2_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression1 = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function_re, 9.1_const);
+        ASSERT_FALSE(expression.equals(expression1));
+    }
+    {
+        const auto expression_clone = expression.clone();
+        ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
+        ASSERT_TRUE(expression.equals(expression_clone));
+    }
 }
 
 TEST(FinalExpressionUnaryFunction, WithFunctional) {
