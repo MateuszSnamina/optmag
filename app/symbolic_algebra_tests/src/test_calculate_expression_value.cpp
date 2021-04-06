@@ -10,6 +10,7 @@
 namespace sa = symbolic_algebra;
 using namespace sa::literals;
 using namespace sa::operators;
+using namespace sa::math;
 
 TEST(CalculateExpressionValue, OnConst) {
     const auto expression = 9.1_const;
@@ -123,6 +124,15 @@ TEST(CalculateExpressionValue, OnSumThreeConsts) {
     ASSERT_DOUBLE_EQ(value, 4.2 + 1.7 + 3.2);
 }
 
+TEST(CalculateExpressionValue, OnSin) {
+    auto expression = sin(4.2_const);
+    //std::cout << expression.str() << std::endl;
+    ASSERT_EQ(expression.str(), "sin⦗4.2⦘");
+    //std::cout << expression.str() << std::endl;
+    const auto value = sa::calculate_expression_value(expression, arma::vec{});
+    ASSERT_DOUBLE_EQ(value, std::sin(4.2));
+}
+
 TEST(CalculateExpressionValue, MinimalExample1) {
     auto expression = sa::ProductExpression::make(0_var, (4_var + 6.1_const), 9.1_const);
     //std::cout << expression.str() << std::endl;
@@ -171,11 +181,12 @@ TEST(CalculateExpressionValue, MinimalExample6) {
     ASSERT_DOUBLE_EQ(value, ((-11.3)+6.1)*(2*9.1));}
 
 TEST(CalculateExpressionValue, MinimalExample7) {
-    auto expression = sa::ProductExpression::make(0_var, (4_var * 6.1_const), 9.1_const);
+    auto expression = sin(sa::ProductExpression::make(0_var, (4_var * 6.1_const), 9.1_const));
     //std::cout << expression.str() << std::endl;
-    ASSERT_EQ(expression.str(), "❪x_0◦❪x_4◦6.1❫◦9.1❫");
+    ASSERT_EQ(expression.str(), "sin⦗❪x_0◦❪x_4◦6.1❫◦9.1❫⦘");
     const auto value = sa::calculate_expression_value(expression, arma::vec{+1.2, -3.4, +4.5, -8.9, -11.3});
-    ASSERT_DOUBLE_EQ(value, (+1.2)*((-11.3)*6.1)*9.1);}
+    ASSERT_DOUBLE_EQ(value, std::sin((+1.2)*((-11.3)*6.1)*9.1));
+}
 
 TEST(CalculateExpressionValue, MinimalExample8) {
     auto expression = (sa::SumExpression::make_zero() * 9.1_const);

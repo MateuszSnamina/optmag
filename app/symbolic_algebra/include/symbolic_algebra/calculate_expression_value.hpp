@@ -6,6 +6,7 @@
 #include<symbolic_algebra/expression_final_constant.hpp>
 #include<symbolic_algebra/expression_final_variable.hpp>
 #include<symbolic_algebra/expression_final_structural_blocks.hpp>
+#include<symbolic_algebra/expression_final_unary_functions.hpp>
 
 #include<armadillo>
 
@@ -38,6 +39,9 @@ inline double calculate_expression_value(const ExpressionHandler& expression_han
         const auto factor = casted_expression.unwrap().get().factor();
         const auto value_of_child_expression = calculate_expression_value_closure(expression_handler.subexpression(0));
         return factor * value_of_child_expression;
+    } else if (const auto& casted_expression = expression_handler.casted_target<UnaryFunctionExpression>()) {
+        const auto value_of_child_expression = calculate_expression_value_closure(expression_handler.subexpression(0));
+        return casted_expression.unwrap().get().eval(value_of_child_expression);
     }
     throw std::runtime_error("No receipt for expression value calculation for expression `" + expression_handler.str() + "`.");
 }
