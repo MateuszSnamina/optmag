@@ -6,6 +6,32 @@
 #include<string>
 
 // **********************************************************
+// ***  UnaryFunctionExpression                           ***
+// **********************************************************
+
+namespace symbolic_algebra {
+
+class UnaryFunctionExpression : public BridgeExpression {
+public:
+    // copy semantic:
+    UnaryFunctionExpression(const UnaryFunctionExpression&) = delete;
+    UnaryFunctionExpression& operator=(const UnaryFunctionExpression&) = delete;
+    // move semantic:
+    UnaryFunctionExpression(UnaryFunctionExpression&&) = delete;
+    UnaryFunctionExpression& operator=(UnaryFunctionExpression&&) = default;
+    // other member functions:
+    virtual double eval(double) const = 0;
+protected:
+    UnaryFunctionExpression(ExpressionHandler&& expr_hdl) noexcept;
+};
+
+inline UnaryFunctionExpression::UnaryFunctionExpression(ExpressionHandler&& expr_hdl) noexcept
+    : BridgeExpression(std::move(expr_hdl)) {
+}
+
+}  // namespace symbolic_algebra
+
+// **********************************************************
 // ***  FunctionObjectComparator                          ***
 // **********************************************************
 
@@ -30,10 +56,10 @@ struct FunctionObjectComparator<double(*)(double)> {
     }
 };
 
-}
+}  // namespace symbolic_algebra
 
 // **********************************************************
-// ***  UnaryFunctionExpression                           ***
+// ***  UnaryFunctionExpressionDynamic                    ***
 // **********************************************************
 
 namespace symbolic_algebra {
@@ -48,10 +74,10 @@ namespace symbolic_algebra {
  * - `std::function<double(double)>`,
  * - any custom callable object, with `double CustomType::operator()(double) const` defined.
  *
- * Note: the UnaryFunctionExpression comparison
- * `UnaryFunctionExpression<...>::equals(const Expression& other)`
+ * Note: the UnaryFunctionExpressionDynamic comparison
+ * `UnaryFunctionExpressionDynamic<...>::equals(const Expression& other)`
  * is defined as follow:
- * - `UnaryFunctionExpression<...>` with `UnaryFunctionT := doube(*)(doube)`
+ * - `UnaryFunctionExpressionDynamic<...>` with `UnaryFunctionT := doube(*)(doube)`
  *   compares the underlying pointers,
  * - with other `UnaryFunctionT` the comparson always returns `false`.
  * The function name is not taken into account in comparison.
@@ -65,15 +91,15 @@ namespace symbolic_algebra {
  */
 
 template<const char** name, class UnaryFunctionT>
-class UnaryFunctionExpression final : public BridgeExpression {
+class UnaryFunctionExpressionDynamic final : public UnaryFunctionExpression {
     using UnaryFunction = UnaryFunctionT;
 public:
     // copy semantic:
-    UnaryFunctionExpression(const UnaryFunctionExpression&) = delete;
-    UnaryFunctionExpression& operator=(const UnaryFunctionExpression&) = delete;
+    UnaryFunctionExpressionDynamic(const UnaryFunctionExpressionDynamic&) = delete;
+    UnaryFunctionExpressionDynamic& operator=(const UnaryFunctionExpressionDynamic&) = delete;
     // move semantic:
-    UnaryFunctionExpression(UnaryFunctionExpression&&) = delete;
-    UnaryFunctionExpression& operator=(UnaryFunctionExpression&&) = default;
+    UnaryFunctionExpressionDynamic(UnaryFunctionExpressionDynamic&&) = delete;
+    UnaryFunctionExpressionDynamic& operator=(UnaryFunctionExpressionDynamic&&) = default;
     // creation model:
     static ExpressionHandler make(UnaryFunctionT function, ExpressionHandler&& expr_hdl);
     // other member functions:
@@ -81,44 +107,43 @@ public:
     bool equals(const Expression&) const override;
     std::string str() const override;
     std::string repr() const override;
+    double eval(double) const override;
     const UnaryFunction& function() const;
     std::string function_name() const;
-
 private:
-    UnaryFunctionExpression(UnaryFunctionT function, ExpressionHandler&& expr_hdl) noexcept;
-    std::unique_ptr<UnaryFunctionExpression<name, UnaryFunctionT>> casted_clone() const;
+    UnaryFunctionExpressionDynamic(UnaryFunctionT function, ExpressionHandler&& expr_hdl) noexcept;
+    std::unique_ptr<UnaryFunctionExpressionDynamic<name, UnaryFunctionT>> casted_clone() const;
     template <class ExpressionClass, class... Args>
     friend symbolic_algebra::ExpressionHandler symbolic_algebra::ExpressionHandler::make(Args&&...);
-
 private:
     const UnaryFunctionT _function;
 };
 
 template<const char** name, class UnaryFunctionT>
-UnaryFunctionExpression<name, UnaryFunctionT>::UnaryFunctionExpression(UnaryFunctionT function, ExpressionHandler&& expr_hdl) noexcept
-    : BridgeExpression(std::move(expr_hdl)), _function(function) {
+UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::UnaryFunctionExpressionDynamic(UnaryFunctionT function, ExpressionHandler&& expr_hdl) noexcept
+    : UnaryFunctionExpression(std::move(expr_hdl)), _function(function) {
 }
 
 template<const char** name, class UnaryFunctionT>
-ExpressionHandler UnaryFunctionExpression<name, UnaryFunctionT>::make(UnaryFunctionT function, ExpressionHandler&& expr_hdl) {
-    return ExpressionHandler::make<UnaryFunctionExpression>(function, std::move(expr_hdl));
+ExpressionHandler UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::make(UnaryFunctionT function, ExpressionHandler&& expr_hdl) {
+    return ExpressionHandler::make<UnaryFunctionExpressionDynamic>(function, std::move(expr_hdl));
 }
 
 template<const char** name, class UnaryFunctionT>
-std::unique_ptr<UnaryFunctionExpression<name, UnaryFunctionT>> UnaryFunctionExpression<name, UnaryFunctionT>::casted_clone() const {
-    using SelfT = UnaryFunctionExpression<name, UnaryFunctionT>;
+std::unique_ptr<UnaryFunctionExpressionDynamic<name, UnaryFunctionT>> UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::casted_clone() const {
+    using SelfT = UnaryFunctionExpressionDynamic<name, UnaryFunctionT>;
     return std::unique_ptr<SelfT>(new SelfT(_function, subexpression(0).clone()));
 }
 
 template<const char** name, class UnaryFunctionT>
-ExpressionHandler UnaryFunctionExpression<name, UnaryFunctionT>::clone() const {
-    using SelfT = UnaryFunctionExpression<name, UnaryFunctionT>;
+ExpressionHandler UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::clone() const {
+    using SelfT = UnaryFunctionExpressionDynamic<name, UnaryFunctionT>;
     return ExpressionHandler::make<SelfT>(_function, subexpression(0).clone());
 }
 
 template<const char** name, class UnaryFunctionT>
-bool UnaryFunctionExpression<name, UnaryFunctionT>::equals(const Expression& other) const {
-    using SelfT = UnaryFunctionExpression<name, UnaryFunctionT>;
+bool UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::equals(const Expression& other) const {
+    using SelfT = UnaryFunctionExpressionDynamic<name, UnaryFunctionT>;
     const auto casted_other_ptr = dynamic_cast<const SelfT*>(&other);
     if (!casted_other_ptr) {
         return false;
@@ -134,22 +159,27 @@ bool UnaryFunctionExpression<name, UnaryFunctionT>::equals(const Expression& oth
 }
 
 template<const char** name, class UnaryFunctionT>
-std::string UnaryFunctionExpression<name, UnaryFunctionT>::str() const {
+std::string UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::str() const {
     return function_name() + "⦗" + subexpression(0).target().str() + "⦘";
 }
 
 template<const char** name, class UnaryFunctionT>
-std::string UnaryFunctionExpression<name, UnaryFunctionT>::repr() const {
+std::string UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::repr() const {
     return "UnaryFunction(" + function_name() + ";" + subexpression(0).target().repr() + ")";
 }
 
 template<const char** name, class UnaryFunctionT>
-const UnaryFunctionT& UnaryFunctionExpression<name, UnaryFunctionT>::function() const {
+double UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::eval(double x) const {
+    return _function(x);
+}
+
+template<const char** name, class UnaryFunctionT>
+const UnaryFunctionT& UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::function() const {
     return _function;
 }
 
 template<const char** name, class UnaryFunctionT>
-std::string UnaryFunctionExpression<name, UnaryFunctionT>::function_name() const {
+std::string UnaryFunctionExpressionDynamic<name, UnaryFunctionT>::function_name() const {
     return std::string(*name);
 }
 
@@ -163,7 +193,7 @@ std::string UnaryFunctionExpression<name, UnaryFunctionT>::function_name() const
 namespace symbolic_algebra {
 
 template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>
-class UnaryFunctionStaticExpression final : public BridgeExpression {
+class UnaryFunctionStaticExpression final : public UnaryFunctionExpression {
     using UnaryFunction = UnaryFunctionT;
 public:
     // copy semantic:
@@ -179,6 +209,7 @@ public:
     bool equals(const Expression&) const override;
     std::string str() const override;
     std::string repr() const override;
+    double eval(double) const override;
     const UnaryFunction function() const;
     std::string function_name() const;
 
@@ -191,7 +222,7 @@ private:
 
 template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>
 UnaryFunctionStaticExpression<name, UnaryFunctionT, functionStatic>::UnaryFunctionStaticExpression(ExpressionHandler&& expr_hdl) noexcept
-    : BridgeExpression(std::move(expr_hdl)) {
+    : UnaryFunctionExpression(std::move(expr_hdl)) {
 }
 
 template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>
@@ -233,6 +264,11 @@ std::string UnaryFunctionStaticExpression<name, UnaryFunctionT, functionStatic>:
 template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>
 std::string UnaryFunctionStaticExpression<name, UnaryFunctionT, functionStatic>::repr() const {
     return "UnaryFunction(" + function_name() + ";" + subexpression(0).target().repr() + ")";
+}
+
+template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>
+double UnaryFunctionStaticExpression<name, UnaryFunctionT, functionStatic>::eval(double x) const {
+    return functionStatic(x);
 }
 
 template<const char** name, class UnaryFunctionT, UnaryFunctionT functionStatic>

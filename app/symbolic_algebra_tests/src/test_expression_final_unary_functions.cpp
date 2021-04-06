@@ -30,26 +30,33 @@ using namespace sa::operators;
 TEST(FinalExpressionUnaryFunction, WithFunctionPointer) {
     using FunctionPtrT = double(*)(double);
     auto sub_expression = 9.1_const;
-    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>;
+    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpressionDynamic<&foo1_name, FunctionPtrT>;
     const auto expression = FinalExpressionUnaryFunctionType::make(foo1_function, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
-    const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
-    ASSERT_TRUE(expression_casted);
-    ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo1_function(123.4));
+    {
+        const auto expression_casted = expression.casted_target<sa::UnaryFunctionExpression>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().eval(123.4), foo1_function(123.4));
+    }
+    {
+        const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo1_function(123.4));
+    }
     {
         const auto expression1 = 9.1_const;
         ASSERT_FALSE(expression.equals(expression1));
     }
     {
-        const auto expression1 = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function, 9.1_const);
+        const auto expression1 = sa::UnaryFunctionExpressionDynamic<&foo1_name, FunctionPtrT>::make(foo1_function, 9.1_const);
         ASSERT_TRUE(expression.equals(expression1));
     }
     {
-        const auto expression1 = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function, 9.2_const);
+        const auto expression1 = sa::UnaryFunctionExpressionDynamic<&foo1_name, FunctionPtrT>::make(foo1_function, 9.2_const);
         ASSERT_FALSE(expression.equals(expression1));
     }
     {
-        const auto expression1 = sa::UnaryFunctionExpression<&foo1_name, FunctionPtrT>::make(foo1_function_re, 9.1_const);
+        const auto expression1 = sa::UnaryFunctionExpressionDynamic<&foo1_name, FunctionPtrT>::make(foo1_function_re, 9.1_const);
         ASSERT_FALSE(expression.equals(expression1));
     }
     {
@@ -63,12 +70,19 @@ TEST(FinalExpressionUnaryFunction, WithFunctional) {
     auto sub_expression = 9.1_const;
     using FunctionalT = std::function<double(double)>;
     const FunctionalT foo2_functional = [](double x){return 2.45 * x + 3.7;};
-    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpression<&foo2_name, FunctionalT>;
+    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpressionDynamic<&foo2_name, FunctionalT>;
     const auto expression = FinalExpressionUnaryFunctionType::make(foo2_functional, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo2⦗9.1⦘");
-    const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
-    ASSERT_TRUE(expression_casted);
-    ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo2_functional(123.4));
+    {
+        const auto expression_casted = expression.casted_target<sa::UnaryFunctionExpression>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().eval(123.4), foo2_functional(123.4));
+    }
+    {
+        const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo2_functional(123.4));
+    }
     {
         const auto expression1 = 9.1_const;
         ASSERT_FALSE(expression.equals(expression1));
@@ -99,12 +113,19 @@ TEST(FinalExpressionUnaryFunction, WithCustomFunctor) {
             return 2.5 * x + 6.7;
         }
     } foo3_custom_functor;
-    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpression<&foo3_name, CustomFunctorT>;
+    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpressionDynamic<&foo3_name, CustomFunctorT>;
     const auto expression = FinalExpressionUnaryFunctionType::make(foo3_custom_functor, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo3⦗9.1⦘");
-    const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
-    ASSERT_TRUE(expression_casted);
-    ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo3_custom_functor(123.4));
+    {
+        const auto expression_casted = expression.casted_target<sa::UnaryFunctionExpression>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().eval(123.4), foo3_custom_functor(123.4));
+    }
+    {
+        const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo3_custom_functor(123.4));
+    }
     {
         const auto expression1 = 9.1_const;
         ASSERT_FALSE(expression.equals(expression1));
@@ -132,12 +153,19 @@ TEST(FinalExpressionUnaryFunction, WithLambda) {
     auto sub_expression = 9.1_const;
     const auto foo4_lambda = [](double x){return 2.5 * x + 6.7;};
     using LambdaT = decltype(foo4_lambda);
-    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpression<&foo4_name, LambdaT>;
+    using FinalExpressionUnaryFunctionType = sa::UnaryFunctionExpressionDynamic<&foo4_name, LambdaT>;
     const auto expression = FinalExpressionUnaryFunctionType::make(foo4_lambda, std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo4⦗9.1⦘");
-    const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
-    ASSERT_TRUE(expression_casted);
-    ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo4_lambda(123.4));
+    {
+        const auto expression_casted = expression.casted_target<sa::UnaryFunctionExpression>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().eval(123.4), foo4_lambda(123.4));
+    }
+    {
+        const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo4_lambda(123.4));
+    }
     {
         const auto expression1 = 9.1_const;
         ASSERT_FALSE(expression.equals(expression1));
@@ -167,9 +195,16 @@ TEST(FinalExpressionUnaryFunctionStaticExpression, WithFunctionPointer) {
     using FinalExpressionUnaryFunctionType = sa::UnaryFunctionStaticExpression<&foo1_name, FunctionPtrT, foo1_function>;
     const auto expression = FinalExpressionUnaryFunctionType::make(std::move(sub_expression));
     ASSERT_EQ(expression.str(), "foo1⦗9.1⦘");
-    const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
-    ASSERT_TRUE(expression_casted);
-    ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo1_function(123.4));
+    {
+        const auto expression_casted = expression.casted_target<sa::UnaryFunctionExpression>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().eval(123.4), foo1_function(123.4));
+    }
+    {
+        const auto expression_casted = expression.casted_target<FinalExpressionUnaryFunctionType>();
+        ASSERT_TRUE(expression_casted);
+        ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().function()(123.4), foo1_function(123.4));
+    }
     {
         const auto expression1 = 9.1_const;
         ASSERT_FALSE(expression.equals(expression1));
