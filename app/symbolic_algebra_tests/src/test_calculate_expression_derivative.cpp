@@ -50,6 +50,30 @@ TEST(CalculateExpressionDerivative, OnVar1) {
     ASSERT_EQ(derrivative_expression.str(), "1");
 }
 
+TEST(CalculateExpressionDerivative, OnInv) {
+    const auto expression = inv(2_var);
+    ASSERT_EQ(expression.str(), "inv⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪❪-1◦inv⦗sq⦗x_2⦘⦘❫◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnSq) {
+    const auto expression = sq(2_var);
+    ASSERT_EQ(expression.str(), "sq⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪❪2◦x_2❫◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnCb) {
+    const auto expression = cb(2_var);
+    ASSERT_EQ(expression.str(), "cb⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪❪3◦sq⦗x_2⦘❫◦1❫❵");
+}
+
 TEST(CalculateExpressionDerivative, OnSin) {
     const auto expression = sin(2_var);
     ASSERT_EQ(expression.str(), "sin⦗x_2⦘");
@@ -72,6 +96,38 @@ TEST(CalculateExpressionDerivative, OnTan) {
     //std::cout << expression.str() << std::endl;
     const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
     ASSERT_EQ(derrivative_expression.str(), "❴❪inv⦗sq⦗cos⦗x_2⦘⦘⦘◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnAsin) {
+    const auto expression = asin(2_var);
+    ASSERT_EQ(expression.str(), "asin⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪inv⦗sqrt⦗❴1+❪-1◦sq⦗x_2⦘❫❵⦘⦘◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnAcos) {
+    const auto expression = acos(2_var);
+    ASSERT_EQ(expression.str(), "acos⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪❪-1◦inv⦗sqrt⦗❴1+❪-1◦sq⦗x_2⦘❫❵⦘⦘❫◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnAtan) {
+    const auto expression = atan(2_var);
+    ASSERT_EQ(expression.str(), "atan⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    ASSERT_EQ(derrivative_expression.str(), "❴❪inv⦗❴1+sq⦗x_2⦘❵⦘◦1❫❵");
+}
+
+TEST(CalculateExpressionDerivative, OnSqrt) {
+    const auto expression = sqrt(2_var);
+    ASSERT_EQ(expression.str(), "sqrt⦗x_2⦘");
+    //std::cout << expression.str() << std::endl;
+    //const sa::ExpressionHandler derrivative_expression = sa::calculate_derivative_expression(expression, 2);
+    //ASSERT_EQ(derrivative_expression.str(), "❴❪❪0.5◦sqrt⦗x_2⦘❫◦1❫❵");
 }
 
 TEST(CalculateExpressionDerivative, OnRealFactored1) {

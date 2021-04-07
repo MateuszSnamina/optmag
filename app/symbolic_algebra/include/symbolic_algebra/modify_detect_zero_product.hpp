@@ -11,7 +11,14 @@ namespace symbolic_algebra {
  * Transformation example: ❪a◦b◦𝟘◦c◦d❫ => 𝟘
  */
 
-ModificationResult modify_detect_zero_product(ExpressionHandler&&);
+ModificationResult modify_detect_zero_product_1(ExpressionHandler&&);
+
+/*
+ * Transformation goal: Detect when product expression has the zero factor
+ * Transformation example: ❪a◦b◦0◦c◦d❫ => 0
+ */
+
+ModificationResult modify_detect_zero_product_2(ExpressionHandler&&);
 
 }  // namespace symbolic_algebra
 

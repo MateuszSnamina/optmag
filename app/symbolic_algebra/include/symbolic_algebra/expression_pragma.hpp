@@ -1,3 +1,6 @@
+#ifndef SYMBOLIC_ALGEBRA_EXPRESSION_PRAGMA_HPP
+#define SYMBOLIC_ALGEBRA_EXPRESSION_PRAGMA_HPP
+
 //SELF:
 #include <symbolic_algebra/expression_abstract.hpp>
 
@@ -48,5 +51,6 @@ ExpressionHandler cbrt(ExpressionHandler&& expr);
 
 } // namespace math
 
-
 }  // namespace symbolic_algebra
+
+#endif
