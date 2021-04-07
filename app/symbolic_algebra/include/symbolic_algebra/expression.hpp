@@ -25,6 +25,9 @@
 #include<symbolic_algebra/modify_remove_bridge_sum.hpp>
 #include<symbolic_algebra/modify_remove_bridge_product.hpp>
 
+#include <symbolic_algebra/modify_remove_const_zeros_from_sum.hpp>
+#include <symbolic_algebra/modify_remove_const_ones_from_product.hpp>
+
 #include<symbolic_algebra/modify_flatten_numerous_expression.hpp>
 #include<symbolic_algebra/modify_flatten_sum.hpp>
 #include<symbolic_algebra/modify_flatten_product.hpp>

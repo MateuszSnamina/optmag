@@ -78,19 +78,14 @@ TEST(Holistic, Example1) {
     {
         // ********** handle d/dx_1[expression] **********
         sa::ExpressionHandler derrivative_1_expression = sa::calculate_derivative_expression(expression, 1);
-        std::cout << derrivative_1_expression.str() << std::endl; //TODO: comment it
+        // std::cout << derrivative_1_expression.str() << std::endl;
         ASSERT_EQ(derrivative_1_expression.str(), "❴❪❪x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦1❫+❪❪4◦x_1❫◦❴❪cos⦗❴sq⦗x_2⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_2❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵");
         const auto value_1 = sa::calculate_expression_value(derrivative_1_expression, arma::vec{5.6, -1.1, 2.6});
         ASSERT_DOUBLE_EQ(value_1, -2.8871198153705353);
         // ********** simplify ***************************
         sa::dfs_transform(derrivative_1_expression, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-        // sa::dfs_transform(expression, sa::modify_rebuild_sum_into_linear_combination);
-        // sa::dfs_transform(expression, sa::modify_simplify_linear_combination);
-        // sa::dfs_transform(expression, sa::modify_detect_one_factor);
-        // sa::dfs_transform(expression, sa::modify_detect_zero_factor);
-        std::cout << derrivative_1_expression.str() << std::endl; //TODO: comment it
-        ASSERT_EQ(derrivative_1_expression.str(), "❴0+❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘◦1❫+0+0❵");
-        // a posteriori: "❴0+❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘◦1❫+0+0❵"
+        // std::cout << derrivative_1_expression.str() << std::endl;
+        ASSERT_EQ(derrivative_1_expression.str(), "❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫");
         const auto value_1_re = sa::calculate_expression_value(derrivative_1_expression, arma::vec{5.6, -1.1, 2.6});
         ASSERT_DOUBLE_EQ(value_1_re, -2.8871198153705353);
     }
@@ -103,13 +98,8 @@ TEST(Holistic, Example1) {
         ASSERT_DOUBLE_EQ(value_2, -15.835765167341281);
         // ********** simplify ***************************
         sa::dfs_transform(derrivative_2_expression, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-        // sa::dfs_transform(expression, sa::modify_rebuild_sum_into_linear_combination);
-        // sa::dfs_transform(expression, sa::modify_simplify_linear_combination);
-        // sa::dfs_transform(expression, sa::modify_detect_one_factor);
-        // sa::dfs_transform(expression, sa::modify_detect_zero_factor);
-        std::cout << derrivative_2_expression.str() << std::endl; //TODO: comment it
-        ASSERT_EQ(derrivative_2_expression.str(), "❴0+0+❪4◦x_1◦cos⦗❴sq⦗x_2⦘+5❵⦘◦1◦2◦x_2◦1❫+0❵");
-        // a posteriori: ❴0+0+❪4◦x_1◦cos⦗❴sq⦗x_2⦘+5❵⦘◦1◦2◦x_2◦1❫+0❵
+        // std::cout << derrivative_2_expression.str() << std::endl;
+        ASSERT_EQ(derrivative_2_expression.str(), "❪4◦x_1◦cos⦗❴sq⦗x_2⦘+5❵⦘◦2◦x_2❫");
         const auto value_2_re = sa::calculate_expression_value(derrivative_2_expression, arma::vec{5.6, -1.1, 2.6});
         ASSERT_DOUBLE_EQ(value_2_re, -15.835765167341281);
     }
