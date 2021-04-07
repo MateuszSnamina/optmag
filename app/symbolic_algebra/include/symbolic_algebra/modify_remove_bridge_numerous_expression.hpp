@@ -2,7 +2,6 @@
 #define SYMBOLIC_ALGEBRA_MODIFY_REMOVE_BRIDGE_NUMEROUS_EXPRESSION_HPP
 
 // SELF:
-#include <symbolic_algebra/algorithm_dfs.hpp>
 #include <symbolic_algebra/expression_abstract.hpp>
 #include <symbolic_algebra/expression_abstract_common.hpp>
 // STD:

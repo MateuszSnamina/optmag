@@ -19,7 +19,7 @@ ModificationResult modify_simplify_linear_combination(ExpressionHandler&& expres
     const auto& range = expression.range();
     // ***************************************************************
     // *** the transformation applies only to product expressions   **
-    // *** of factors being of RealFactoredExpression type       **
+    // *** of factors being of RealFactoredExpression type          **
     // ***************************************************************
     const bool are_all_subexpression_factors =
         boost::algorithm::all_of(range, [](const ExpressionHandler& expression) {
