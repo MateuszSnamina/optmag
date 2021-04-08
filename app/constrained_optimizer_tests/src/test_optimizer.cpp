@@ -1,10 +1,11 @@
 // TESTED LIBRARY:
+#include<constrained_optimizer/optimizer.hpp>
+// SYMBOLIC ALGEBRA:
 #include <symbolic_algebra/expression_pragma.hpp>
 #include <symbolic_algebra/calculate_expression_value.hpp>
 #include <symbolic_algebra/calculate_expression_derivative.hpp>
 #include <symbolic_algebra/algorithm_dfs.hpp>
 #include <symbolic_algebra/modify_canonical_math.hpp>
-#include <symbolic_algebra/util_make.hpp>
 // GTEST:
 #include <gtest/gtest.h>
 
@@ -13,93 +14,56 @@ using namespace sa::literals;
 using namespace sa::operators;
 using namespace sa::math;
 
-
-/*
- * **Holistic example**
- *
- * This is holistic example for expression = ❪4◦x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫
- *
- * **Calculation of d/dx_1[expression]**
- *
- * d/dx_1[expression] = ❴❪❪x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦AAAA1❫+❪❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦AAAA2❫+❪❪4◦x_1❫◦AAAA3❫❵
- * where: AAAA1 = d/dx_1 4
- *              = 0
- * where: AAAA2 = d/dx_1 x_1
- *              = 1
- * where: AAAA3 = d/dx_1 sin⦗❴sq⦗x_2⦘+5❵⦘
- *              = ❴❪cos⦗❴sq⦗x_2⦘+5❵⦘◦BBBBB❫❵
- * where: BBBB  = d/dx_1 ❴sq⦗x_2⦘+5❵
- *              = ❴❪1◦CCCC❫+❪1◦0❫❵
- * where: CCCC  = d/dx_1 sq⦗x_2⦘
- *              = ❴❪❪2◦x_2❫◦DDDD❫❵
- * where: DDDD  = d/dx_1 x_2
- *              = 0
- * So:
- * d/dx_1[expression] = ❴❪❪x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦1❫+❪❪4◦x_1❫◦❴❪cos⦗❴sq⦗x_2⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_2❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵
- *
- * **Calculation of d/dx_2[expression]**
- *
- * d/dx_1[expression] = ❴❪❪x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦AAAA1❫+❪❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦AAAA2❫+❪❪4◦x_1❫◦AAAA3❫❵
- * where: AAAA1 = d/dx_2 4
- *              = 0
- * where: AAAA2 = d/dx_2 x_1
- *              = 0
- * where: AAAA3 = d/dx_2 sin⦗❴sq⦗x_2⦘+5❵⦘
- *              = ❴❪cos⦗❴sq⦗x_2⦘+5❵⦘◦BBBBB❫❵
- * where: BBBB  = d/dx_2 ❴sq⦗x_2⦘+5❵
- *              = ❴❪1◦CCCC❫+❪1◦0❫❵
- * where: CCCC  = d/dx_2 sq⦗x_2⦘
- *              = ❴❪❪2◦x_2❫◦DDDD❫❵
- * where: DDDD  = d/dx_2 x_2
- *              = 1
- * So:
- * d/dx_1[expression] = ❴❪❪x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦0❫+❪❪4◦x_1❫◦❴❪cos⦗❴sq⦗x_2⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_2❫◦1❫❵❫+❪1◦0❫❵❫❵❫❵
- *
- * ** Queries in Woflra Alpha **
- * Query: f(x,y)=(4*x*sin((y*y+5))) at x=1, y=2
- * Gives: f(x,y)=3.17583
- * Quary: d/dx(4*x*sin((y*y+5)))
- * Gives: 4*sin(5+y^2)
- * Query: f1(x,y)=d/dx(4*x*sin((y*y+5))) at x=-1.1, y=2.6
- * Gives: f1(x,y)=-2.88712
- * Query: d/dy(4*x*sin((y*y+5)))
- * Gives: 8*x*y*cos(5)*cos(y^2) - 8*x*y*sin(5)*sin(y^2) = 8*x*y*cos(5+y^2)
- * Query: f2(x,y)=d/dy(4*x*sin((y*y+5))) at x=-1.1, y=2.6
- * Gives: f2(x,y)=-15.8358
- */
-TEST(Holistic, Example1) {
-    const auto expression = sa::ProductExpression::make(4.0_const, 1_var, sin(sq(2_var) + 5.0_const));
-    ASSERT_EQ(expression.str(), "❪4◦x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫");
-    //std::cout << expression.str() << std::endl;
-    const auto value = sa::calculate_expression_value(expression, arma::vec{5.6, -1.1, 2.6});
-    ASSERT_DOUBLE_EQ(value, 3.1758317969075889);
-    // ********************************
-    {
-        // ********** handle d/dx_1[expression] **********
-        sa::ExpressionHandler derrivative_1_expression = sa::calculate_derivative_expression(expression, 1);
-        // std::cout << derrivative_1_expression.str() << std::endl;
-        ASSERT_EQ(derrivative_1_expression.str(), "❴❪❪x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦1❫+❪❪4◦x_1❫◦❴❪cos⦗❴sq⦗x_2⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_2❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵");
-        const auto value_1 = sa::calculate_expression_value(derrivative_1_expression, arma::vec{5.6, -1.1, 2.6});
-        ASSERT_DOUBLE_EQ(value_1, -2.8871198153705353);
-        // ********** simplify ***************************
-        sa::dfs_transform(derrivative_1_expression, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-        // std::cout << derrivative_1_expression.str() << std::endl;
-        ASSERT_EQ(derrivative_1_expression.str(), "❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫");
-        const auto value_1_re = sa::calculate_expression_value(derrivative_1_expression, arma::vec{5.6, -1.1, 2.6});
-        ASSERT_DOUBLE_EQ(value_1_re, -2.8871198153705353);
-    }
-    {
-        // ********** handle d/dx_2[expression] **********
-        sa::ExpressionHandler derrivative_2_expression = sa::calculate_derivative_expression(expression, 2);
-        // std::cout << derrivative_2_expression.str() << std::endl;
-        ASSERT_EQ(derrivative_2_expression.str(), "❴❪❪x_1◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_2⦘+5❵⦘❫◦0❫+❪❪4◦x_1❫◦❴❪cos⦗❴sq⦗x_2⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_2❫◦1❫❵❫+❪1◦0❫❵❫❵❫❵");
-        const auto value_2 = sa::calculate_expression_value(derrivative_2_expression, arma::vec{5.6, -1.1, 2.6});
-        ASSERT_DOUBLE_EQ(value_2, -15.835765167341281);
-        // ********** simplify ***************************
-        sa::dfs_transform(derrivative_2_expression, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-        // std::cout << derrivative_2_expression.str() << std::endl;
-        ASSERT_EQ(derrivative_2_expression.str(), "❪8◦x_1◦cos⦗❴sq⦗x_2⦘+5❵⦘◦x_2❫");
-        const auto value_2_re = sa::calculate_expression_value(derrivative_2_expression, arma::vec{5.6, -1.1, 2.6});
-        ASSERT_DOUBLE_EQ(value_2_re, -15.835765167341281);
-    }
+TEST(ConstrainedOptimizer, Example1) {
+    // ********************************************************
+    // ********** handle d/dx_0[loss_function] ****************
+    const auto loss_function = sa::ProductExpression::make(4.0_const, 0_var, sin(sq(1_var) + 5.0_const));
+    ASSERT_EQ(loss_function.str(), "❪4◦x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫");
+    // ********** handle d/dx_0[loss_function] ****************
+    sa::ExpressionHandler derrivative_1_loss_function = sa::calculate_derivative_expression(loss_function, 0);
+    ASSERT_EQ(derrivative_1_loss_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦1❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵");
+    sa::dfs_transform(derrivative_1_loss_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
+    ASSERT_EQ(derrivative_1_loss_function.str(), "❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫");
+    // ********** handle d/dx_1[loss_function] ****************
+    sa::ExpressionHandler derrivative_2_loss_function = sa::calculate_derivative_expression(loss_function, 1);
+    ASSERT_EQ(derrivative_2_loss_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦1❫❵❫+❪1◦0❫❵❫❵❫❵");
+    sa::dfs_transform(derrivative_2_loss_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
+    ASSERT_EQ(derrivative_2_loss_function.str(), "❪8◦x_0◦cos⦗❴sq⦗x_1⦘+5❵⦘◦x_1❫");
+    // ********** vector (d/dx_1, d/dx_1)  ********************
+    sa::ExpressionHandlerVector loss_function_deivatives;
+    loss_function_deivatives.push_back(std::move(derrivative_1_loss_function));
+    loss_function_deivatives.push_back(std::move(derrivative_2_loss_function));
+    // ********************************************************
+    // ********** handle d/dx_0[constraint_function] **********
+    const auto constraint_function = sa::ProductExpression::make(4.0_const, 0_var, sin(sq(1_var) + 5.0_const));
+    ASSERT_EQ(constraint_function.str(), "❪4◦x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫");
+    // ********** handle d/dx_0[constraint_function] **********
+    sa::ExpressionHandler derrivative_1_constraint_function = sa::calculate_derivative_expression(constraint_function, 0);
+    ASSERT_EQ(derrivative_1_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦1❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵");
+    sa::dfs_transform(derrivative_1_constraint_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
+    ASSERT_EQ(derrivative_1_constraint_function.str(), "❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫");
+    // ********** handle d/dx_1[constraint_function] **********
+    sa::ExpressionHandler derrivative_2_constraint_function = sa::calculate_derivative_expression(constraint_function, 1);
+    ASSERT_EQ(derrivative_2_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦1❫❵❫+❪1◦0❫❵❫❵❫❵");
+    sa::dfs_transform(derrivative_2_constraint_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
+    ASSERT_EQ(derrivative_2_constraint_function.str(), "❪8◦x_0◦cos⦗❴sq⦗x_1⦘+5❵⦘◦x_1❫");
+    // ********** vector (d/dx_1, d/dx_1)  ********************
+    sa::ExpressionHandlerVector constraint_function_deivatives;
+    constraint_function_deivatives.push_back(std::move(derrivative_1_constraint_function));
+    constraint_function_deivatives.push_back(std::move(derrivative_2_constraint_function));
+    // ********************************************************
+    std::cout << "A" << std::endl;
+    const constrained_optimizer::OptimizationMethodParams optimization_method_params =
+            constrained_optimizer::SlpParamsBuilder().build();
+    std::cout << "B" << std::endl;
+    constrained_optimizer::OptimizationProblemDefinition optimization_problem_definition =
+            constrained_optimizer::OptimizationProblemDefinitionBuilder()
+            .set_n_variables(2)
+            .set_loss_function(loss_function.clone())
+            .set_loss_function_deivatives(loss_function_deivatives)
+            .set_constraint_function(constraint_function.clone())
+            .set_constraint_function_deivatives(constraint_function_deivatives)
+            .build();
+    std::cout << "C" << std::endl;
+    constrained_optimizer::optimize(optimization_problem_definition, optimization_method_params);
 }

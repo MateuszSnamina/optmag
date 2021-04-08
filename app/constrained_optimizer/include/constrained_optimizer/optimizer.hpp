@@ -12,34 +12,42 @@
 #include <iterator>
 #include <algorithm>
 
-namespace constrained_optimizer {
-
-class OptimizationProblemDefinition;
-
 // **********************************************************
 // ***  OptimizationProblemDefinitionBuilder              ***
 // **********************************************************
 
+namespace constrained_optimizer {
+
+class OptimizationProblemDefinition;
+
 class OptimizationProblemDefinitionBuilder {
 public:
-    void set_n_variables(unsigned n_variables){
+    OptimizationProblemDefinitionBuilder& set_n_variables(unsigned n_variables){
         _n_variables = n_variables;
+        return *this;
     }
-    void set_loss_function(symbolic_algebra::ExpressionHandler loss_function) {
+    OptimizationProblemDefinitionBuilder& set_loss_function(symbolic_algebra::ExpressionHandler loss_function) {
         _loss_function = std::move(loss_function);
+        return *this;
     }
-    void set_loss_function_deivatives(symbolic_algebra::ExpressionHandlerVector& loss_function_deivatives) {
+    OptimizationProblemDefinitionBuilder& set_loss_function_deivatives(symbolic_algebra::ExpressionHandlerVector& loss_function_deivatives) {
         _loss_function_deivatives = symbolic_algebra::ExpressionHandlerVector{};
         std::move(std::begin(loss_function_deivatives),
                   std::end(loss_function_deivatives),
                   std::back_insert_iterator<symbolic_algebra::ExpressionHandlerVector>(*_loss_function_deivatives));
+        return *this;
     }
-    //    void set_constraint_function(symbolic_algebra::ExpressionHandler constraint_function) {
-    //        _constraint_function = std::move(constraint_function);
-    //    }
-    //    void set_constraint_function_deivatives(symbolic_algebra::ExpressionHandlerVector& constraint_function_deivatives) {
-    //        _constraint_function_deivatives = constraint_function_deivatives;
-    //    }
+    OptimizationProblemDefinitionBuilder& set_constraint_function(symbolic_algebra::ExpressionHandler constraint_function) {
+        _constraint_function = std::move(constraint_function);
+        return *this;
+    }
+    OptimizationProblemDefinitionBuilder& set_constraint_function_deivatives(symbolic_algebra::ExpressionHandlerVector& constraint_function_deivatives) {
+        _constraint_function_deivatives = symbolic_algebra::ExpressionHandlerVector{};
+        std::move(std::begin(constraint_function_deivatives),
+                  std::end(constraint_function_deivatives),
+                  std::back_insert_iterator<symbolic_algebra::ExpressionHandlerVector>(*_constraint_function_deivatives));
+        return *this;
+    }
     OptimizationProblemDefinition build();
 private:
     std::optional<unsigned> _n_variables;
@@ -75,7 +83,7 @@ private:
     friend OptimizationProblemDefinition OptimizationProblemDefinitionBuilder::build();
 };
 
-OptimizationProblemDefinition OptimizationProblemDefinitionBuilder::build() {
+inline OptimizationProblemDefinition OptimizationProblemDefinitionBuilder::build() {
     if (!_n_variables) {
         throw std::runtime_error("Can not build OptimizationProblemDefinition as `n_variables` is not set.");
     }
@@ -98,12 +106,13 @@ OptimizationProblemDefinition OptimizationProblemDefinitionBuilder::build() {
                                          *_constraint_function_deivatives);
 }
 
-
-
+}  // namespace constrained_optimizer
 
 // **********************************************************
 // ***  SqpParams                                         ***
 // **********************************************************
+
+namespace constrained_optimizer {
 
 class SqpParams;
 
@@ -119,9 +128,20 @@ private:
     friend SqpParams SqpParamsBuilder::build() const;
 };
 
+inline SqpParams::SqpParams() {
+}
+
+inline SqpParams SqpParamsBuilder::build() const {
+    return SqpParams{};
+}
+
+}  // namespace constrained_optimizer
+
 // **********************************************************
 // ***  AulParams                                         ***
 // **********************************************************
+
+namespace constrained_optimizer {
 
 class AulParams;
 
@@ -139,10 +159,20 @@ private:
     friend AulParams AulParamsBuilder::build() const;
 };
 
+inline AulParams::AulParams() {
+}
+
+inline AulParams AulParamsBuilder::build() const {
+    return AulParams{};
+}
+
+}  // namespace constrained_optimizer
 
 // **********************************************************
 // ***  SlpParams                                         ***
 // **********************************************************
+
+namespace constrained_optimizer {
 
 class SlpParams;
 
@@ -158,13 +188,27 @@ private:
     friend SlpParams SlpParamsBuilder::build() const;
 };
 
+inline SlpParams::SlpParams() {
+}
+
+inline SlpParams SlpParamsBuilder::build() const {
+    return SlpParams{};
+}
+
+}  // namespace constrained_optimizer
+
 // **********************************************************
 // ***  OptimizationProblemDefinitionBuilder              ***
 // **********************************************************
 
+namespace constrained_optimizer {
+
 using OptimizationMethodParams = std::variant<SqpParams, AulParams, SlpParams>;
 
-void optimize(OptimizationProblemDefinition, OptimizationMethodParams, bool optguard = true);
+void optimize(
+        const OptimizationProblemDefinition&,
+        const OptimizationMethodParams&,
+        bool optguard = true);
 
 }  // namespace constrained_optimizer
 
