@@ -14,6 +14,13 @@ using namespace sa::literals;
 using namespace sa::operators;
 using namespace sa::math;
 
+
+/*
+ * ** WolframAlfa **
+ * Query: minimize 4*x*sin((y^2+5)) with (2*x)^2 + (y-1)^2 + -1=0
+ * Output: {{-1.48849, {x -> 0.437179, y -> 0.514719}}}
+ */
+
 TEST(ConstrainedOptimizer, Example1) {
     // ********************************************************
     // ********** handle d/dx_0[loss_function] ****************
@@ -35,18 +42,18 @@ TEST(ConstrainedOptimizer, Example1) {
     loss_function_deivatives.push_back(std::move(derrivative_2_loss_function));
     // ********************************************************
     // ********** handle d/dx_0[constraint_function] **********
-    const auto constraint_function = sa::ProductExpression::make(4.0_const, 0_var, sin(sq(1_var) + 5.0_const));
-    ASSERT_EQ(constraint_function.str(), "❪4◦x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫");
+    const auto constraint_function = sa::SumExpression::make(sq(2 * 0_var), sq(1_var + sa::ConstantExpression::make(-1.0)), sa::ConstantExpression::make(-1.0));
+    ASSERT_EQ(constraint_function.str(), "❴sq⦗❪2•x_0❫⦘+sq⦗❴x_1+-1❵⦘+-1❵");
     // ********** handle d/dx_0[constraint_function] **********
     sa::ExpressionHandler derrivative_1_constraint_function = sa::calculate_derivative_expression(constraint_function, 0);
-    ASSERT_EQ(derrivative_1_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦1❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵");
+    ////ASSERT_EQ(derrivative_1_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦1❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵"); //TODO
     sa::dfs_transform(derrivative_1_constraint_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-    ASSERT_EQ(derrivative_1_constraint_function.str(), "❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫");
+    ////ASSERT_EQ(derrivative_1_constraint_function.str(), "❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫"); //TODO
     // ********** handle d/dx_1[constraint_function] **********
     sa::ExpressionHandler derrivative_2_constraint_function = sa::calculate_derivative_expression(constraint_function, 1);
-    ASSERT_EQ(derrivative_2_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦1❫❵❫+❪1◦0❫❵❫❵❫❵");
+    /////ASSERT_EQ(derrivative_2_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦1❫❵❫+❪1◦0❫❵❫❵❫❵"); //TODO
     sa::dfs_transform(derrivative_2_constraint_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-    ASSERT_EQ(derrivative_2_constraint_function.str(), "❪8◦x_0◦cos⦗❴sq⦗x_1⦘+5❵⦘◦x_1❫");
+    ////ASSERT_EQ(derrivative_2_constraint_function.str(), "❪8◦x_0◦cos⦗❴sq⦗x_1⦘+5❵⦘◦x_1❫"); //TODO
     // ********** vector (d/dx_1, d/dx_1)  ********************
     sa::ExpressionHandlerVector constraint_function_deivatives;
     constraint_function_deivatives.push_back(std::move(derrivative_1_constraint_function));
@@ -66,4 +73,7 @@ TEST(ConstrainedOptimizer, Example1) {
             .build();
     std::cout << "C" << std::endl;
     constrained_optimizer::optimize(optimization_problem_definition, optimization_method_params);
+    // ********************************************************
+    //ASSERT_NEAR (0.437179, x(0), 0.000001)
+    //ASSERT_NEAR (0.514719, x(1), 0.000001)
 }
