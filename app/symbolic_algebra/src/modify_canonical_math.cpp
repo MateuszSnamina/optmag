@@ -14,7 +14,8 @@
 #include <symbolic_algebra/modify_remove_bridge_sum.hpp>
 #include <symbolic_algebra/modify_remove_const_zeros_from_sum.hpp>
 #include <symbolic_algebra/modify_remove_const_ones_from_product.hpp>
-
+#include <symbolic_algebra/modify_eval_partial_prod.hpp>
+#include <symbolic_algebra/modify_eval_partial_sum.hpp>
 // STD:
 
 namespace symbolic_algebra {
@@ -65,6 +66,13 @@ ModificationResult modify_canonical_math(ExpressionHandler&& expression) {
         return ModificationResult::make_generated_result(std::move(expression));
     }
     if (modify_in_place(expression, modify_rebuild_factor_sum_into_sum_factors)) {
+        return ModificationResult::make_generated_result(std::move(expression));
+    }
+
+    if (modify_in_place(expression, modify_eval_partial_prod)) {
+        return ModificationResult::make_generated_result(std::move(expression));
+    }
+    if (modify_in_place(expression, modify_eval_partial_sum)) {
         return ModificationResult::make_generated_result(std::move(expression));
     }
 

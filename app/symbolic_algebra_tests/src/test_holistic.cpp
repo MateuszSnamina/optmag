@@ -98,7 +98,7 @@ TEST(Holistic, Example1) {
         // ********** simplify ***************************
         sa::dfs_transform(derrivative_2_expression, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
         // std::cout << derrivative_2_expression.str() << std::endl;
-        ASSERT_EQ(derrivative_2_expression.str(), "❪4◦x_1◦cos⦗❴sq⦗x_2⦘+5❵⦘◦2◦x_2❫");
+        ASSERT_EQ(derrivative_2_expression.str(), "❪8◦x_1◦cos⦗❴sq⦗x_2⦘+5❵⦘◦x_2❫");
         const auto value_2_re = sa::calculate_expression_value(derrivative_2_expression, arma::vec{5.6, -1.1, 2.6});
         ASSERT_DOUBLE_EQ(value_2_re, -15.835765167341281);
     }
