@@ -5,7 +5,6 @@
 #include <symbolic_algebra/expression.hpp>
 #include <symbolic_algebra/calculate_expression_derivative.hpp>
 #include <symbolic_algebra/util_make.hpp>
-
 // GTEST:
 #include <gtest/gtest.h>
 

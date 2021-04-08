@@ -5,7 +5,6 @@
 #include <symbolic_algebra/algorithm_dfs.hpp>
 #include <symbolic_algebra/modify_canonical_math.hpp>
 #include <symbolic_algebra/util_make.hpp>
-
 // GTEST:
 #include <gtest/gtest.h>
 

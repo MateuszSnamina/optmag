@@ -4,14 +4,12 @@
 
 // GTEST:
 #include <gtest/gtest.h>
-// BOOST:
-#include <boost/range/algorithm/count.hpp>
 
 namespace sa = symbolic_algebra;
 using namespace sa::literals;
 using namespace sa::math;
 
-TEST(FinalMathFunctions, ConstantExpression) {
+TEST(FinalMathFunctions, WithConstantExpression) {
     {
         const auto expression_abs = abs(9.1_const);
         ASSERT_EQ(expression_abs.str(), "abs⦗9.1⦘");
@@ -187,5 +185,21 @@ TEST(FinalMathFunctions, ConstantExpression) {
         ASSERT_TRUE(expression_casted);
         ASSERT_DOUBLE_EQ(expression_casted.unwrap().get().eval(0.1234), std::cbrt(0.1234));
     }
-
+    {
+        const auto expression_abs_91 = abs(9.1_const);
+        const auto expression_sin_91 = sin(9.1_const);
+        const auto expression_sin_81 = sin(8.1_const);
+        ASSERT_EQ(expression_abs_91.str(), "abs⦗9.1⦘");
+        ASSERT_EQ(expression_sin_91.str(), "sin⦗9.1⦘");
+        ASSERT_EQ(expression_sin_81.str(), "sin⦗8.1⦘");
+        ASSERT_TRUE(expression_abs_91.equals(expression_abs_91));
+        ASSERT_FALSE(expression_abs_91.equals(expression_sin_91));
+        ASSERT_FALSE(expression_abs_91.equals(expression_sin_81));
+        ASSERT_FALSE(expression_sin_91.equals(expression_abs_91));
+        ASSERT_TRUE(expression_sin_91.equals(expression_sin_91));
+        ASSERT_FALSE(expression_sin_91.equals(expression_sin_81));
+        ASSERT_FALSE(expression_sin_81.equals(expression_abs_91));
+        ASSERT_FALSE(expression_sin_81.equals(expression_sin_91));
+        ASSERT_TRUE(expression_sin_81.equals(expression_sin_81));
+    }
 }
