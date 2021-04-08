@@ -176,6 +176,8 @@ message("---  the project  -----------------")
 message("-----------------------------------")
 
 add_subdirectory("symbolic_algebra")
-#add_subdirectory("symbolic_algebra_example")
 add_subdirectory("symbolic_algebra_tests")
+add_subdirectory("constrained_optimizer")
+add_subdirectory("constrained_optimizer_tests")
+
 add_subdirectory(optmag_app)
