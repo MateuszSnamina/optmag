@@ -221,6 +221,51 @@ inline SlpParams SlpParamsBuilder::build() const {
 }  // namespace constrained_optimizer
 
 // **********************************************************
+// ***  OptimizationParams                                ***
+// **********************************************************
+
+namespace constrained_optimizer {
+
+class OptimizationParams;
+
+class OptimizationParamsBuilder {
+    OptimizationParamsBuilder& set_epsx(double epsx) {
+        _epsx = epsx;
+        return *this;
+    }
+    OptimizationParamsBuilder& set_maxits(unsigned maxits) {
+        _maxits = maxits;
+        return *this;
+    }
+public:
+    OptimizationParams build() const;
+    double _epsx = 0.000001;
+    unsigned _maxits = 0;
+private:
+};
+
+class OptimizationParams {
+public:
+    const double _epsx;
+    const unsigned _maxits;
+private:
+    OptimizationParams(double _epsx, unsigned _maxits);
+    friend OptimizationParams OptimizationParamsBuilder::build() const;
+};
+
+inline OptimizationParams::OptimizationParams(double epsx, unsigned maxits) :
+    _epsx(epsx),
+    _maxits(maxits) {
+    assert(epsx >= 0.0);
+}
+
+inline OptimizationParams OptimizationParamsBuilder::build() const {
+    return OptimizationParams{_epsx, _maxits};
+}
+
+}  // namespace constrained_optimizer
+
+// **********************************************************
 // ***  OptimizationProblemDefinitionBuilder              ***
 // **********************************************************
 
@@ -231,6 +276,7 @@ using OptimizationMethodParams = std::variant<SqpParams, AulParams, SlpParams>;
 arma::vec optimize(
         const OptimizationProblemDefinition&,
         const arma::vec& x0,
+        const OptimizationParams&,
         const OptimizationMethodParams&,
         bool optguard = true);
 

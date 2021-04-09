@@ -59,8 +59,11 @@ TEST(ConstrainedOptimizer, Example1) {
     constraint_function_deivatives.push_back(std::move(derrivative_1_constraint_function));
     constraint_function_deivatives.push_back(std::move(derrivative_2_constraint_function));
     // ********************************************************
+    const constrained_optimizer::OptimizationParams optimization_params =
+            constrained_optimizer::OptimizationParamsBuilder().build();
     const constrained_optimizer::OptimizationMethodParams optimization_method_params =
             //constrained_optimizer::SlpParamsBuilder().build();
+            //constrained_optimizer::SqpParamsBuilder().build();
             constrained_optimizer::AulParamsBuilder().build();
     constrained_optimizer::OptimizationProblemDefinition optimization_problem_definition =
             constrained_optimizer::OptimizationProblemDefinitionBuilder()
@@ -71,7 +74,11 @@ TEST(ConstrainedOptimizer, Example1) {
             .set_constraint_function_deivatives(constraint_function_deivatives)
             .build();
     const arma::vec x0 {0.0, 0.0};
-    const arma::vec x_opt = constrained_optimizer::optimize(optimization_problem_definition, x0, optimization_method_params);
+    const arma::vec x_opt = constrained_optimizer::optimize(
+                optimization_problem_definition,
+                x0,
+                optimization_params,
+                optimization_method_params);
     ASSERT_NEAR (x_opt(0), 0.437179, 0.000001);
     ASSERT_NEAR (x_opt(1), 0.514719, 0.000001);
     // ********************************************************

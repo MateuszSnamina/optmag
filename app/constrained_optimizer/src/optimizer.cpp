@@ -95,19 +95,21 @@ namespace constrained_optimizer {
 arma::vec optimize(
         const OptimizationProblemDefinition& problem_definition,
         const arma::vec& x0_arma,
-        const OptimizationMethodParams& method_params,
+        const OptimizationParams& optimization_params,
+        const OptimizationMethodParams& optimization_method_params,
         bool optguard) {
     // *************** Setup *******************************
+    const unsigned n_variables = problem_definition._n_variables;
     const alglib::real_1d_array x0_arglib = arma2arglib::vec_copy(x0_arma); // variables value
     const alglib::real_1d_array s_arglib = arma2arglib::vec_copy(problem_definition._variables_scale); // variables scale
-    double epsx = 0.000001;
-    alglib::ae_int_t maxits = 0;
+    const double epsx = optimization_params._epsx;
+    const alglib::ae_int_t maxits = optimization_params._maxits;
     alglib::minnlcstate state;
-    alglib::minnlccreate(problem_definition._n_variables, x0_arglib, state);
+    alglib::minnlccreate(n_variables, x0_arglib, state);
     alglib::minnlcsetcond(state, epsx, maxits);
     alglib::minnlcsetscale(state, s_arglib);
     //alglib::minnlcsetstpmax(state, 10.0);
-    std::visit(SetupVisitor{state}, method_params);
+    std::visit(SetupVisitor{state}, optimization_method_params);
     alglib::minnlcsetnlc(state, 1, 0); // first argument is number of equality constraints, second is number of inequality constraints.
     if (optguard) {
         alglib::minnlcoptguardsmoothness(state);
