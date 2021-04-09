@@ -46,23 +46,22 @@ TEST(ConstrainedOptimizer, Example1) {
     ASSERT_EQ(constraint_function.str(), "❴sq⦗❪2•x_0❫⦘+sq⦗❴x_1+-1❵⦘+-1❵");
     // ********** handle d/dx_0[constraint_function] **********
     sa::ExpressionHandler derrivative_1_constraint_function = sa::calculate_derivative_expression(constraint_function, 0);
-    ////ASSERT_EQ(derrivative_1_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦1❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦0❫❵❫+❪1◦0❫❵❫❵❫❵"); //TODO
+    ASSERT_EQ(derrivative_1_constraint_function.str(), "❴❪1◦❴❪❪2◦❪2•x_0❫❫◦❪2•1❫❫❵❫+❪1◦❴❪❪2◦❴x_1+-1❵❫◦❴❪1◦0❫+❪1◦0❫❵❫❵❫+❪1◦0❫❵");
     sa::dfs_transform(derrivative_1_constraint_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-    ////ASSERT_EQ(derrivative_1_constraint_function.str(), "❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫"); //TODO
+    ASSERT_EQ(derrivative_1_constraint_function.str(), "❪4•❪2◦x_0❫❫"); //TODO
     // ********** handle d/dx_1[constraint_function] **********
     sa::ExpressionHandler derrivative_2_constraint_function = sa::calculate_derivative_expression(constraint_function, 1);
-    /////ASSERT_EQ(derrivative_2_constraint_function.str(), "❴❪❪x_0◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦sin⦗❴sq⦗x_1⦘+5❵⦘❫◦0❫+❪❪4◦x_0❫◦❴❪cos⦗❴sq⦗x_1⦘+5❵⦘◦❴❪1◦❴❪❪2◦x_1❫◦1❫❵❫+❪1◦0❫❵❫❵❫❵"); //TODO
+    ASSERT_EQ(derrivative_2_constraint_function.str(), "❴❪1◦❴❪❪2◦❪2•x_0❫❫◦❪2•0❫❫❵❫+❪1◦❴❪❪2◦❴x_1+-1❵❫◦❴❪1◦1❫+❪1◦0❫❵❫❵❫+❪1◦0❫❵");
     sa::dfs_transform(derrivative_2_constraint_function, sa::modify_canonical_math, sa::GreedinessLevel::DoDfsForReplacedExpressions);
-    ////ASSERT_EQ(derrivative_2_constraint_function.str(), "❪8◦x_0◦cos⦗❴sq⦗x_1⦘+5❵⦘◦x_1❫"); //TODO
+    ASSERT_EQ(derrivative_2_constraint_function.str(), "❴❪4•0❫+❪2◦x_1❫+-2❵");
     // ********** vector (d/dx_1, d/dx_1)  ********************
     sa::ExpressionHandlerVector constraint_function_deivatives;
     constraint_function_deivatives.push_back(std::move(derrivative_1_constraint_function));
     constraint_function_deivatives.push_back(std::move(derrivative_2_constraint_function));
     // ********************************************************
-    std::cout << "A" << std::endl;
     const constrained_optimizer::OptimizationMethodParams optimization_method_params =
-            constrained_optimizer::SlpParamsBuilder().build();
-    std::cout << "B" << std::endl;
+            //constrained_optimizer::SlpParamsBuilder().build();
+            constrained_optimizer::AulParamsBuilder().build();
     constrained_optimizer::OptimizationProblemDefinition optimization_problem_definition =
             constrained_optimizer::OptimizationProblemDefinitionBuilder()
             .set_n_variables(2)
@@ -71,9 +70,9 @@ TEST(ConstrainedOptimizer, Example1) {
             .set_constraint_function(constraint_function.clone())
             .set_constraint_function_deivatives(constraint_function_deivatives)
             .build();
-    std::cout << "C" << std::endl;
-    constrained_optimizer::optimize(optimization_problem_definition, optimization_method_params);
+    const arma::vec x0 {0.0, 0.0};
+    const arma::vec x_opt = constrained_optimizer::optimize(optimization_problem_definition, x0, optimization_method_params);
+    ASSERT_NEAR (x_opt(0), 0.437179, 0.000001);
+    ASSERT_NEAR (x_opt(1), 0.514719, 0.000001);
     // ********************************************************
-    //ASSERT_NEAR (0.437179, x(0), 0.000001)
-    //ASSERT_NEAR (0.514719, x(1), 0.000001)
 }
